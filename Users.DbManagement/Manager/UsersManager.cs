@@ -1,6 +1,10 @@
 ﻿using System.Diagnostics;
 using Users.DbManagement.Models;
 using BCrypt;
+using MongoDB;
+using MongoDB.Driver;
+using System.Collections.Generic;
+using System.Configuration;
 
 namespace Users.DbManagement.Manager
 {
@@ -14,7 +18,7 @@ namespace Users.DbManagement.Manager
         /// <example>
         /// 
         /// </example>
-        public void AddNewUser (User user)
+        public void AddUser (User user)
         {
 
         }
@@ -48,6 +52,11 @@ namespace Users.DbManagement.Manager
             var timeTaken = sw.ElapsedMilliseconds;
 
             return (timeTaken.ToString(), finalPass);
+        }
+
+        public string TestingMongo()
+        {
+            return null;
         }
     }
 }

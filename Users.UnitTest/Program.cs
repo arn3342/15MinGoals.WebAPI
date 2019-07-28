@@ -8,7 +8,8 @@ namespace Users.UnitTest
         static void Main(string[] args)
         {
             UsersManager usersManager = new UsersManager();
-            Console.WriteLine(usersManager.GenereateHashOfPassword("arn33423342").FinalPassword);
+            var test = usersManager.TestingMongo();
+            Console.WriteLine(test);
             Console.Read();
         }
     }

@@ -1,0 +1,7 @@
+{
+  "profiles": {
+    "Users.DbManagement": {
+      "commandName": "Executable"
+    }
+  }
+}
