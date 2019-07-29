@@ -13,20 +13,22 @@ namespace Users.BusinessLayer
         /// <param name="Email"></param>
         /// <param name="Password"></param>
         /// <returns></returns>
-        public bool LogInUserSuccessfully (string Email, string Password)
-        {
-            AccessUser accessUser = new AccessUser();
-            var test = accessUser.GetOne(Email, Password);
-            if (test != null)
-            {
-                return true;
-            }
-        }
+        //        public bool LogInUserSuccessfully (string Email, string Password)
+        //        {
+        //            AccessUser accessUser = new AccessUser();
+        //            var test = accessUser.GetOne(Email, Password);
+        //            if (test != null)
+        //            {
+        //                return true;
+        //            }
+        //        }
 
-        public bool CreateNewUser(string Email, string Password)
-        {
-            AccessUser accessUser = new AccessUser();
-            
-        }
+        //        public bool CreateNewUser(string Email, string Password)
+        //        {
+        //            AccessUser accessUser = new AccessUser();
+
+        //        }
+        //    }
+        //}
     }
 }

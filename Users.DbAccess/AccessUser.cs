@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using MongoDB.Driver;
 using Users.DbAccess.Interfaces;
 
 namespace Users.DbAccess
@@ -10,10 +11,15 @@ namespace Users.DbAccess
     /// </summary>
     public class AccessUser : IGlobalOperation
     {
-        
+        MongoClient client;
+
+        public AccessUser(MongoClient cl)
+        {
+            client = cl;
+        }
         public void DeleteAll(object Query)
         {
-            throw new NotImplementedException();
+            
         }
 
         public void DeleteOne(object Query)
@@ -23,12 +29,12 @@ namespace Users.DbAccess
 
         public void GetAll(object Query)
         {
-            GetOne(2);
+            client;
         }
 
         public void GetOne(object Query)
         {
-            mongodb.getData(Convert.ToInt32(Query));
+            //mongodb.getData(Convert.ToInt32(Query));
         }
 
         public void UpdateAll(object Query)
