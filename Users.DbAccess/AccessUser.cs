@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Users.DbManagement.Manager
+namespace Users.DbAccess
 {
-    class ProfileManager
+    public class AccessUser
     {
+        
     }
 }

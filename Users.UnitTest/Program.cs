@@ -1,5 +1,5 @@
 ﻿using System;
-using Users.DbManagement.Manager;
+using Users.Models;
 
 namespace Users.UnitTest
 {
@@ -7,9 +7,9 @@ namespace Users.UnitTest
     {
         static void Main(string[] args)
         {
-            UsersManager usersManager = new UsersManager();
-            var test = usersManager.TestingMongo();
-            Console.WriteLine(test);
+            //Post post = new Post();
+            //post.Post_Type = PostType.Regular;
+            //Console.WriteLine(PostType.Regular);
             Console.Read();
         }
     }
