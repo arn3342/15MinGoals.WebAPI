@@ -19,7 +19,7 @@ namespace Users.Models
         public string Education_Institute { get; set; }
         public string Work_Institute { get; set; }
         public bool Tour_Complete { get; set; }
-        public int[] Reference_Ids { get; set; }
+        public int[] Connection_Ids { get; set; }
         public int[] Post_Ids { get; set; }
     }
 }

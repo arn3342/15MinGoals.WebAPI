@@ -16,6 +16,14 @@ namespace Users.Models
         public string Privacy_Level { get; set; }
         public int[] Feedback_Ids { get; set; }
         public int[] Inspire_Ids { get; set; }
+
+        public void CreateNewPost()
+        {
+            Post post = new Post
+            {
+                Post_Type = PostType.Regular = "Regular"
+            };
+        }
     }
 
     /// <summary>
@@ -25,23 +33,24 @@ namespace Users.Models
     {
         public static string Regular
         {
-            get { return Regular; }
+            get { return "Regular"; }
             set { Regular = "Regular"; }
         }
         public static string Goal
         {
-            get { return Goal; }
+            get { return "Goal"; }
             set { Goal = "Goal"; }
         }
         public static string Share
         {
-            get { return Share; }
+            get { return "Share"; }
             set { Share = "Share"; }
         }
         public static string Short_Article
         {
-            get { return Short_Article; }
+            get { return "Short_Article"; }
             set { Short_Article = "Short_Article"; }
         }
     }
+    // Create a class for PrivacyType
 }

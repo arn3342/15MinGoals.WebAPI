@@ -4,6 +4,9 @@ using System.Text;
 
 namespace Users.Models
 {
+    /// <summary>
+    /// Represents the login details of a user
+    /// </summary>
     public class User
     {
         public string Email { get; set; }
