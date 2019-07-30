@@ -15,6 +15,7 @@ namespace Users.WebAPI
 {
     public class Startup
     {
+        //public static string ConnectionString { get; private set; }
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -40,6 +41,7 @@ namespace Users.WebAPI
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+            //ConnectionString = Configuration.GetConnectionString("xxxxxx");
 
             app.UseHttpsRedirection();
             app.UseMvc();

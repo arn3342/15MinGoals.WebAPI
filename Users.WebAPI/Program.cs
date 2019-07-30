@@ -17,7 +17,7 @@ namespace Users.WebAPI
         public static void Main(string[] args)
         {
             CreateWebHostBuilder(args).Build().Run();
-            accessUser = new AccessUser("");
+            
         }
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>

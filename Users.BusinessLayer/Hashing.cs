@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Users.DbAccess
+namespace Users.BusinessLayer
 {
-    public class GenerateHash
+    public class Hashing
     {
+
     }
 }
