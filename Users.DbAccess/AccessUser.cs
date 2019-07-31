@@ -29,7 +29,7 @@ namespace Users.DbAccess
 
         public void GetAll(object Query)
         {
-            client;
+            //client;
         }
 
         public void GetOne(object Query)
