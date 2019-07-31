@@ -12,6 +12,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Users.DbAccess\Users.DbAccess.csproj" />
     <ProjectReference Include="..\Users.Models\Users.Models.csproj" />
+    <ProjectReference Include="..\Users.WebAPI\Users.WebAPI.csproj" />
   </ItemGroup>
 
 </Project>

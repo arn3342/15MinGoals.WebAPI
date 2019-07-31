@@ -5,6 +5,7 @@ using MongoDB.Driver;
 using Users.DbAccess.Interfaces;
 using Users.Models;
 
+
 namespace Users.DbAccess
 {
     /// <summary>
@@ -14,9 +15,9 @@ namespace Users.DbAccess
     {
         private MongoClient client;
         private IMongoDatabase Db;
-
-        string ConnectionString = "mongodb+srv://15MinGoals_Admin:arn33423342@15mincluster0-drbj7.mongodb.net/test?retryWrites=true&w=majority";
-        public AccessUser()
+        
+        //string ConnectionString = "mongodb+srv://15MinGoals_Admin:arn33423342@15mincluster0-drbj7.mongodb.net/test?retryWrites=true&w=majority";
+        public AccessUser(string ConnectionString)
         {
             client = new MongoClient(ConnectionString);
             //getting the database
