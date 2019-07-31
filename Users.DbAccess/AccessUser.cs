@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -26,16 +27,18 @@ namespace Users.DbAccess
         }
         #endregion
 
+        #region Global Variables
         private MongoClient client;
         private IMongoDatabase Db;
-        
+        private AutoResetEvent autoResetEvent = new AutoResetEvent(false);
+        #endregion
+
         //string ConnectionString = "mongodb+srv://15MinGoals_Admin:arn33423342@15mincluster0-drbj7.mongodb.net/test?retryWrites=true&w=majority";
         public AccessUser(string ConnectionString)
         {
             client = new MongoClient(ConnectionString);
             //getting the database
             Db = client.GetDatabase("15MinGoals_Users");
-            var test = GetUser("").Result.IsSuccessful;
             
         }
 
@@ -55,7 +58,7 @@ namespace Users.DbAccess
         public async Task<(bool UserExists, bool IsSuccessful, User ReturnedUser)> GetUser(string email, string password="")
         {
             #region Variables
-            IMongoCollection<User> users = Db.GetCollection<User>("User");
+            IMongoCollection<User> users = Db.GetCollection<User>("user");
             bool IsExistingUser, IsLoginSuccess; IsExistingUser = IsLoginSuccess = false;
             User user = new User();
             #endregion
@@ -82,10 +85,17 @@ namespace Users.DbAccess
 
             //query of the collection data
             //var results = user.Find(x => x.Email == "nayan").FirstOrDefault();
+            //User u = new User();
+            //u.Email = "Imtiyaz";
+            //u.Password = "123456";
+
+            //users.InsertOne(u);
+            //var result =  users.Find(x => x.Email == email).FirstOrDefault();
             #endregion
 
             #region Checking user's existance
-            BsonDocument filter = new BsonDocument(nameof(CollectionFields.email), email);
+            var filter = Builders<User>.Filter.Eq(x => x.Email, email);
+
             await users.Find(filter).ForEachAsync(document =>
             {
                 if (document != null)
@@ -93,11 +103,15 @@ namespace Users.DbAccess
                     // User exists
                     user = document;
                     IsExistingUser = true;
+                    autoResetEvent.Set();
                 }
-            } 
+            }
             );
+            autoResetEvent.WaitOne();
+
             #endregion
 
+            //await Task.Delay(10000); //after execution, wait for 10 secs to see the results Nayan vai.
             #region Matching email & password
             if (user.Password == password)
             {
