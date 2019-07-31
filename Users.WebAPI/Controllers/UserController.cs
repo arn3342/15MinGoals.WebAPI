@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-
+using Users.BusinessLayer;
 
 namespace Users.WebAPI.Controllers
 {
@@ -12,6 +12,17 @@ namespace Users.WebAPI.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
+        public UserController()
+        {
+            UserRepository ur = new UserRepository(Startup.ConnectionString);
+        }
+
+        public ActionResult Index()
+        {
+            return null;
+        }
+
+
         // GET: api/User
         [HttpGet]
         public IEnumerable<string> Get()

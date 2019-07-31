@@ -3,48 +3,58 @@ using System.Collections.Generic;
 using System.Text;
 using MongoDB.Driver;
 using Users.DbAccess.Interfaces;
+using Users.Models;
+
 
 namespace Users.DbAccess
 {
     /// <summary>
     /// A class to access the user's login credentials & profile.
     /// </summary>
-    public class AccessUser : IGlobalOperation
+    public class AccessUser
     {
-        MongoClient client;
-
-        public AccessUser(MongoClient cl)
+        private MongoClient client;
+        private IMongoDatabase Db;
+        
+        //string ConnectionString = "mongodb+srv://15MinGoals_Admin:arn33423342@15mincluster0-drbj7.mongodb.net/test?retryWrites=true&w=majority";
+        public AccessUser(string ConnectionString)
         {
-            client = cl;
+            client = new MongoClient(ConnectionString);
+            //getting the database
+            Db = client.GetDatabase("15MinGoals_Users");
         }
-        public void DeleteAll(object Query)
+
+        public void UserLogin(string email, string pass)
         {
+            IMongoCollection<User> user = Db.GetCollection<User>("User");
+            User u = new User();
+            //u.Email = email;
+            //u.Password = pass;
+
+
+
+            //u.Email = "nayan";
+            //u.Password = "12345";
+
+            //user.InsertOne(u);
             
-        }
+            //retreving the data from the collection
 
-        public void DeleteOne(object Query)
-        {
-            throw new NotImplementedException();
-        }
+            //List<User> userList = user.AsQueryable().ToList<User>();
+            //foreach (var i in userList)
+            //{
+            //    Console.WriteLine(i);
+            //}
 
-        public void GetAll(object Query)
-        {
-            //client;
-        }
+            //query of the collection data
+            var results = user.Find(x => x.Email == "nayan").FirstOrDefault();
+            Console.WriteLine(results.Email);
 
-        public void GetOne(object Query)
-        {
-            //mongodb.getData(Convert.ToInt32(Query));
-        }
 
-        public void UpdateAll(object Query)
-        {
-            throw new NotImplementedException();
-        }
+            Console.ReadKey();
 
-        public void UpdateOne(object Query)
-        {
-           
         }
+        
+
     }
 }

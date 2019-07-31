@@ -15,9 +15,16 @@ namespace Users.WebAPI
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+
+        public IConfigurationRoot ConfigurationRoot { get; set; } 
+        public static string ConnectionString { get; private set; }
+        public Startup(IHostingEnvironment env)
         {
-            Configuration = configuration;
+            //Configuration = configuration;
+            ConfigurationRoot = new ConfigurationBuilder()
+                .SetBasePath(env.ContentRootPath)
+                .AddJsonFile("appSettings.json")
+                .Build();
         }
 
         public IConfiguration Configuration { get; }
@@ -40,6 +47,13 @@ namespace Users.WebAPI
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+
+            app.UseMvc(routes =>
+            {
+                routes.MapRoute("default", "{controller=User}/{action=Index}/{id?}");
+            });
+
+            ConnectionString = ConfigurationRoot["ConnectionString:DefaultConnection"];
 
             app.UseHttpsRedirection();
             app.UseMvc();

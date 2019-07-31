@@ -1,5 +1,12 @@
-﻿using Microsoft.AspNetCore;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Users.DbAccess;
 
 namespace Users.WebAPI
@@ -10,7 +17,7 @@ namespace Users.WebAPI
         public static void Main(string[] args)
         {
             CreateWebHostBuilder(args).Build().Run();
-            //accessUser = new AccessUser("");
+            
         }
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
