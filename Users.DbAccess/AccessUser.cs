@@ -35,7 +35,6 @@ namespace Users.DbAccess
             client = new MongoClient(ConnectionString);
             //getting the database
             Db = client.GetDatabase("15MinGoals_Users");
-            var test = GetUser("").Result.IsSuccessful;
             
         }
 
@@ -55,7 +54,7 @@ namespace Users.DbAccess
         public async Task<(bool UserExists, bool IsSuccessful, User ReturnedUser)> GetUser(string email, string password="")
         {
             #region Variables
-            IMongoCollection<User> users = Db.GetCollection<User>("User");
+            IMongoCollection<User> users = Db.GetCollection<User>("users");
             bool IsExistingUser, IsLoginSuccess; IsExistingUser = IsLoginSuccess = false;
             User user = new User();
             #endregion
