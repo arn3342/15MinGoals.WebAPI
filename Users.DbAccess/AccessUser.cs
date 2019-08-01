@@ -35,11 +35,7 @@ namespace Users.DbAccess
         //string ConnectionString = "mongodb+srv://15MinGoals_Admin:arn33423342@15mincluster0-drbj7.mongodb.net/test?retryWrites=true&w=majority";
         public AccessUser(string ConnectionString)
         {
-            client = new MongoClient(ConnectionString);
-            //getting the database
-            Db = client.GetDatabase("15MinGoals_Users");
-            var test = GetUser("").Result.IsSuccessful;
-            
+            _dbContext = new MongoDbContext(ConnectionString);
         }
 
         /// <summary>
@@ -55,10 +51,10 @@ namespace Users.DbAccess
         /// User user = GetUser("email", "password").Result.ReturnedUser;
         /// </code>
         /// </example>
-        public async Task<(bool UserExists, bool IsSuccessful, User ReturnedUser)> GetUser(string email, string password="")
+        public async Task<(bool UserExists, bool IsSuccessful, User ReturnedUser)> GetUser(string email, string password = "")
         {
             #region Variables
-            IMongoCollection<User> users = Db.GetCollection<User>("User");
+            IMongoCollection<User> users = _dbContext.Db().GetCollection<User>(nameof(MongoDbContext.Collection.user));
             bool IsExistingUser, IsLoginSuccess; IsExistingUser = IsLoginSuccess = false;
             User user = new User();
             #endregion

@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Users.DbAccess": {
+      "commandName": "Project",
+      "nativeDebugging": true
+    }
+  }
+}
