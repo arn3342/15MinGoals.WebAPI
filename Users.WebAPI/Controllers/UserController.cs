@@ -13,6 +13,7 @@ namespace Users.WebAPI.Controllers
     public class UserController : ControllerBase
     {
         UserRepository ur;
+
         public UserController()
         {
              ur = new UserRepository(Startup.ConnectionString);
@@ -20,7 +21,6 @@ namespace Users.WebAPI.Controllers
 
         public ActionResult Index()
         {
-           
             return null;
         }
 

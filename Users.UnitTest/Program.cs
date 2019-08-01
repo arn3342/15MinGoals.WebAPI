@@ -12,7 +12,7 @@ namespace Users.UnitTest
         static void Main(string[] args)
         {
             AccessUser au = new AccessUser(Startup.ConnectionString);
-            au.UserLogin(null, null);
+            //au.UserLogin(null, null);
 
         }
     }

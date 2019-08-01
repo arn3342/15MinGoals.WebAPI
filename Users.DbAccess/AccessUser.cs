@@ -28,18 +28,14 @@ namespace Users.DbAccess
         #endregion
 
         #region Global Variables
-        private MongoClient client;
-        private IMongoDatabase Db;
+        private MongoDbContext _dbContext;
         private AutoResetEvent autoResetEvent = new AutoResetEvent(false);
         #endregion
 
         //string ConnectionString = "mongodb+srv://15MinGoals_Admin:arn33423342@15mincluster0-drbj7.mongodb.net/test?retryWrites=true&w=majority";
         public AccessUser(string ConnectionString)
         {
-            client = new MongoClient(ConnectionString);
-            //getting the database
-            Db = client.GetDatabase("15MinGoals_Users");
-            
+            _dbContext = new MongoDbContext(ConnectionString);
         }
 
         /// <summary>
@@ -58,7 +54,7 @@ namespace Users.DbAccess
         public async Task<(bool UserExists, bool IsSuccessful, User ReturnedUser)> GetUser(string email, string password="")
         {
             #region Variables
-            IMongoCollection<User> users = Db.GetCollection<User>("user");
+            IMongoCollection<User> users = _dbContext.Db().GetCollection<User>(nameof(MongoDbContext.Collection.user));
             bool IsExistingUser, IsLoginSuccess; IsExistingUser = IsLoginSuccess = false;
             User user = new User();
             #endregion
@@ -103,11 +99,11 @@ namespace Users.DbAccess
                     // User exists
                     user = document;
                     IsExistingUser = true;
-                    autoResetEvent.Set();
+                    //autoResetEvent.Set();
                 }
             }
             );
-            autoResetEvent.WaitOne();
+            //autoResetEvent.WaitOne();
 
             #endregion
 
