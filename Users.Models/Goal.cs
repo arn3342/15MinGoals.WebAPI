@@ -9,5 +9,6 @@ namespace Users.Models
         public int Goal_Id { get; set; }
         public int Profile_Id { get; set; }
         public string Goal_Title { get; set; }
+        public Activity[] Activities { get; set; }
     }
 }

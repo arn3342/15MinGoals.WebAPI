@@ -12,9 +12,11 @@ namespace Users.WebAPI.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
+        UserRepository ur;
+
         public UserController()
         {
-            UserRepository ur = new UserRepository(Startup.ConnectionString);
+             ur = new UserRepository(Startup.ConnectionString);
         }
 
         public ActionResult Index()
@@ -25,8 +27,9 @@ namespace Users.WebAPI.Controllers
 
         // GET: api/User
         [HttpGet]
-        public IEnumerable<string> Get()
+        public async Task<IEnumerable<string>> Get()
         {
+            await ur.GetUser(email: "Imtiyaz");
             return new string[] { "value1", "value2" };
         }
 
@@ -40,6 +43,7 @@ namespace Users.WebAPI.Controllers
         [HttpPost]
         public void Post([FromBody] string value)
         {
+
         }
 
         // PUT: api/User/5
