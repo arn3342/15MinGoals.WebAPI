@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using BCrypt.Net;
 
-namespace Users.BusinessLayer
+namespace Users.DbAccess
 {
     public class Hashing
     {
@@ -33,7 +33,7 @@ namespace Users.BusinessLayer
         /// <param name="password"></param>
         /// <param name="correctHash"></param>
         /// <returns>true(if the user is authenticated) or false(when the user is not authenticated)</returns>
-        public static bool ValidatePassword(string password, string correctHash)
+        public  bool ValidatePassword(string password, string correctHash)
         {
             return BCrypt.Net.BCrypt.Verify(password, correctHash);
         }

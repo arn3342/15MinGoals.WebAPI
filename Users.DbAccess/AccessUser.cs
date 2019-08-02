@@ -51,7 +51,7 @@ namespace Users.DbAccess
         /// User user = GetUser("email", "password").Result.ReturnedUser;
         /// </code>
         /// </example>
-        public async Task<(bool UserExists, bool IsSuccessful, User ReturnedUser)> GetUser(string email, string password = "")
+        public async Task<(bool UserExists, bool IsSuccessful)> GetUser(string email, string password = "")
         {
             #region Variables
             IMongoCollection<User> users = _dbContext.Db().GetCollection<User>(nameof(MongoDbContext.Collection.user));
@@ -97,30 +97,33 @@ namespace Users.DbAccess
                 if (document != null)
                 {
                     // User exists
-                    user = document;
                     IsExistingUser = true;
-                    //autoResetEvent.Set();
+                    user = document;
+                    autoResetEvent.Set();
                 }
             }
             );
-            //autoResetEvent.WaitOne();
+            autoResetEvent.WaitOne();
 
             #endregion
+            Hashing hs = new Hashing();
+
+            //checking wheather the password matches with the hashed password
+            bool isPassWordVerified = hs.ValidatePassword(password, user.Password);
 
             #region Matching email & password
-            if (user.Password == password)
+            if(IsExistingUser && isPassWordVerified)
             {
                 IsLoginSuccess = true;
             }
             else
             {
-                // Not sending back the user's info if the password doesn't match.
                 IsLoginSuccess = false;
-                user = null;
             }
+
             #endregion
 
-            return (IsExistingUser, IsLoginSuccess, user);
+            return (IsExistingUser, IsLoginSuccess);
         }
     }
 }

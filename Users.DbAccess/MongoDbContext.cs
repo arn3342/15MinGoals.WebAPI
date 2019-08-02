@@ -21,7 +21,8 @@ namespace Users.DbAccess
         public enum Collection
         {
             user,
-            goals
+            goals,
+            profile
         }
         
     }

@@ -15,10 +15,10 @@ namespace Users.BusinessLayer
              au = new AccessUser(conStr);
         }
 
-        public async Task<(bool UserExists, bool IsSuccessful, User ReturnedUser)> GetUser(string email, string password = "")
+        public async Task<(bool UserExists, bool IsSuccessful)> GetUser(string email, string password = "")
         {
             await au.GetUser(email,password);
-            return (true, true, new User());
+            return (true, true);
         }
 
     }
