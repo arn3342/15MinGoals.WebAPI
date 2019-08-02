@@ -107,7 +107,6 @@ namespace Users.DbAccess
 
             #endregion
 
-            //await Task.Delay(10000); //after execution, wait for 10 secs to see the results Nayan vai.
             #region Matching email & password
             if (user.Password == password)
             {

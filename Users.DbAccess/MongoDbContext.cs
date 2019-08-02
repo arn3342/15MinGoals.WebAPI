@@ -6,7 +6,7 @@ namespace Users.DbAccess
     public class MongoDbContext
     {
         private MongoClient client;
-        //private IMongoDatabase Db;
+       
 
         public MongoDbContext(string conStr)
         {
