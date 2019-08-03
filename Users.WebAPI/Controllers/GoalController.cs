@@ -60,10 +60,10 @@ namespace Users.WebAPI.Controllers
         {
             await goalRepository.CreateActivity(Goal_Id,act);
         }
-        [HttpGet]
-        public async Task<List<Activity>> GetActivityWithLimitAndSkip(string Goal_Id, int limit, int skip)
+        [HttpGet, Route(template: "GetSelectedActivities/{Goal_Id}/{limit}/{skip}")]
+        public async Task<List<Activity>> GetSelectedActivities(string Goal_Id, int limit, int skip)
         {
-            return await GetActivityWithLimitAndSkip(Goal_Id, limit, skip);
+            return await GetSelectedActivities(Goal_Id, limit, skip);
         }
 
 
