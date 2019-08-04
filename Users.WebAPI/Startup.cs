@@ -52,6 +52,10 @@ namespace Users.WebAPI
             {
                 routes.MapRoute("default", "{controller=User}/{action=Index}/{id?}");
             });
+            app.UseMvc(routes =>
+            {
+                routes.MapRoute("default", "{controller=Goal}/{action=Index}/{id?}");
+            });
 
             ConnectionString = ConfigurationRoot["ConnectionString:DefaultConnection"];
 

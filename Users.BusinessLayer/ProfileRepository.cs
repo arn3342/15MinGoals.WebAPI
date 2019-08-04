@@ -18,5 +18,14 @@ namespace Users.BusinessLayer
             }
             return (null);
         }
+
+        public async Task<bool> EditProfile(string userId, Profile profile)
+        {
+            if (!string.IsNullOrEmpty(userId))
+            {
+                return await ap.EditProfile(userId, profile);
+            }
+            return false;
+        }
     }
 }

@@ -22,7 +22,7 @@ namespace Users.DbAccess
         /// </summary>
         /// <param name="password"></param>
         /// <returns> Hashed Password</returns>
-        public static string HashPassword(string password)
+        public  string HashPassword(string password)
         {
             return BCrypt.Net.BCrypt.HashPassword( password, GetRandomSalt());
         }

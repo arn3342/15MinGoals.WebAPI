@@ -1,4 +1,5 @@
-﻿using MongoDB.Driver;
+﻿using MongoDB.Bson;
+using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -53,6 +54,49 @@ namespace Users.DbAccess
                 }
             }
             return u;
+
+
+        }
+
+        /// <summary>
+        /// Method for updating the profile of any user after successfully registration to the system.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="profile"></param>
+        /// <returns> Return a boolean value that represents wheater the update is successfull or not.</returns>
+
+        public async Task<bool> EditProfile(string userId, Profile profile)
+        {
+            bool IsUpdateSuccessfull = false;
+            Profile p = new Profile();
+
+            p.First_Name = profile.First_Name;
+            p.Last_Name = profile.Last_Name;
+            p.Work_Institute = profile.Work_Institute;
+            p.Default_Credential = profile.Default_Credential;
+            p.Country = profile.Country;
+            p.Education_Institute = profile.Education_Institute;
+            p.Tour_Complete = profile.Tour_Complete;
+
+            var UserFilter = Builders<User>.Filter.Eq(x => x.Id, new ObjectId(userId));
+            User SelectedUser = await user.Find(UserFilter).FirstOrDefaultAsync();
+            var update_profile = Builders<User>.Update.Set(g => g.Profile, p);
+
+            try
+            {
+                await user.UpdateOneAsync<User>(usr => usr.Id == new ObjectId(userId),update_profile);
+                IsUpdateSuccessfull = true;
+            }
+            catch(Exception e)
+             {
+                IsUpdateSuccessfull = false;
+            }
+
+            return IsUpdateSuccessfull;
+
+        }
+
+
 
 
         }

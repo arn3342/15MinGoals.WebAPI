@@ -21,5 +21,11 @@ namespace Users.BusinessLayer
             return (true, true);
         }
 
+        public async Task<(bool IsSuccessfull, string userId)> CreateUser(string email, string password)
+        {
+            await au.CreateUser("nayandey07@gmail.com","123456789");
+            return (true, "hello");
+        }
+
     }
 }

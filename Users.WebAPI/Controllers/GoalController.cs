@@ -71,11 +71,3 @@ namespace Users.WebAPI.Controllers
 
     }
 }
-//{"_id":{"$oid":"5d41eab7956d543e2c31e8a1"},
-//"Email":"Imtiyaz",
-//"Password":"123456",
-//"Profile":null,
-//"IsFacebookAuth":false,
-//"IsLinkedInAuth":false,
-//"Reference_Ids":null,
-//"Post_Ids":null}
