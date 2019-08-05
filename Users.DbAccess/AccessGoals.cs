@@ -45,7 +45,6 @@ namespace Users.DbAccess
                                        .ToListAsync();
             if (userGoals.Count > 0)
                 return (true, userGoals);
-
             return (false, null);
         }
         /// <summary>
