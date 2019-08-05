@@ -13,6 +13,9 @@ namespace Users.DbAccess
     {
         private MongoDbContext _dbContext;
         private IMongoCollection<Goal> goals;
+        public IMongoCollection<Progress> progresses;
+
+
         private enum ActivityType
         {
             watched,
@@ -21,11 +24,19 @@ namespace Users.DbAccess
             read
         }
 
+        private enum ProgressType
+        {
+            Beginner,
+            Intermidiate,
+            Proffesional
+        }
+
 
         public AccessGoals(string ConnectionString)
         {
             _dbContext = new MongoDbContext(ConnectionString);
             goals = _dbContext.Db().GetCollection<Goal>(nameof(MongoDbContext.Collection.goals));
+            progresses = _dbContext.Db().GetCollection<Progress>(nameof(MongoDbContext.Collection.progress));
         }
 
 
@@ -140,6 +151,56 @@ namespace Users.DbAccess
             return activites;
         }
 
+        public async Task<(bool IsCreated, bool IsUpdated)> CreateUpdateProgress(string Goal_Id, string CurrentCourse_Id)
+        {
+            bool IsCreate = false;
+            bool IsUpdate = false;
 
+            Progress progress = new Progress();
+            progress = await progresses.Find(p => p.Goal_Id == Goal_Id).FirstOrDefaultAsync();
+
+            if (progress == null)
+            {
+                progress = new Progress();
+                progress.Progress_Id = ObjectId.GenerateNewId();
+                progress.Goal_Id = Goal_Id;
+                progress.CurrentCourse_Id = CurrentCourse_Id;
+                progress.Xp_Points = SetGoalPoints(10);
+                progress.Goal_Level = SetGoalLevel(progress.Xp_Points);
+
+                await progresses.InsertOneAsync(progress);
+
+                return (true,false);
+            }
+            else
+            {
+                progress.CurrentCourse_Id = CurrentCourse_Id;
+                progress.Xp_Points = SetGoalPoints(progress.Xp_Points);
+                progress.Goal_Level = SetGoalLevel(progress.Xp_Points);
+
+                var updateProgress = Builders<Progress>.Update.Set(up=>up.CurrentCourse_Id , progress.CurrentCourse_Id)
+                                                       .Set(up => up.Xp_Points, progress.Xp_Points)
+                                                       .Set(up => up.Goal_Level, progress.Goal_Level);
+
+                await progresses.UpdateOneAsync<Progress>(p => p.Progress_Id == progress.Progress_Id, updateProgress);
+                return (false,true);
+            }
+        }
+
+        private int SetGoalPoints(int prevXp)
+        {
+            int xp = prevXp + 10;
+            return xp;
+        }
+
+        private string SetGoalLevel(int xp)
+        {
+            if (xp < 500)
+                return nameof(ProgressType.Beginner);
+            else if (xp < 1500)
+                return nameof(ProgressType.Intermidiate);
+            else
+                return nameof(ProgressType.Proffesional);
+        }
     }
 }

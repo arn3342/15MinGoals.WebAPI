@@ -22,7 +22,10 @@ namespace Users.WebAPI.Controllers
         [HttpGet]
         public async Task<IEnumerable<string>> GetGoals(string Profile_Id)
         {
-            await goalRepository.GetGoals(Profile_Id= "5d41eab7956d543e2c31e8a1");
+
+            await goalRepository.CreateUpdateProgress("5d4445f7429c4e0f9343006d", "ZZZZZ");
+
+            //await goalRepository.GetGoals(Profile_Id= "5d41eab7956d543e2c31e8a1");
             return null;
         }
 
@@ -63,11 +66,25 @@ namespace Users.WebAPI.Controllers
         [HttpGet, Route(template: "GetSelectedActivities/{Goal_Id}/{limit}/{skip}")]
         public async Task<List<Activity>> GetSelectedActivities(string Goal_Id, int limit, int skip)
         {
-            return await GetSelectedActivities(Goal_Id, limit, skip);
+            return await goalRepository.GetSelectedActivities(Goal_Id, limit, skip);
         }
 
 
         #endregion
+
+
+
+
+        #region Progress
+        [HttpPost]
+        public async Task<(bool IsCreated, bool IsUpdated)> CreateUpdateProgress(string Goal_Id, string CurrentCourse_Id)
+        {
+            return await goalRepository.CreateUpdateProgress("5d4445f7429c4e0f9343006d", "XXXXXYYYY");
+        }
+
+
+        #endregion
+
 
     }
 }
