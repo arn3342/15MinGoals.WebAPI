@@ -20,5 +20,6 @@ namespace Users.Models
         public bool IsLinkedInAuth { get; set; }
         public int[] Reference_Ids { get; set; }
         public int[] Post_Ids { get; set; }
+        
     }
 }
