@@ -1,4 +1,6 @@
-﻿using System;
+﻿using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -9,7 +11,8 @@ namespace Users.Models
     /// </summary>
     public class Profile
     {
-        public int Profile_Id { get; set; }      
+        [BsonId]
+        public ObjectId Profile_Id { get; set; }      
         public string First_Name { get; set; }
         public string Last_Name { get; set; }
         public string Profile_Img_Url { get; set; }

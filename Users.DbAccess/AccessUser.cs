@@ -30,12 +30,15 @@ namespace Users.DbAccess
         #region Global Variables
         private MongoDbContext _dbContext;
         private AutoResetEvent autoResetEvent = new AutoResetEvent(false);
+        private IMongoCollection<User> users;
         #endregion
 
         //string ConnectionString = "mongodb+srv://15MinGoals_Admin:arn33423342@15mincluster0-drbj7.mongodb.net/test?retryWrites=true&w=majority";
         public AccessUser(string ConnectionString)
         {
             _dbContext = new MongoDbContext(ConnectionString);
+            users = _dbContext.Db().GetCollection<User>(nameof(MongoDbContext.Collection.user));
+
         }
 
         /// <summary>
@@ -54,7 +57,6 @@ namespace Users.DbAccess
         public async Task<(bool UserExists, bool IsSuccessful)> GetUser(string email, string password = "")
         {
             #region Variables
-            IMongoCollection<User> users = _dbContext.Db().GetCollection<User>(nameof(MongoDbContext.Collection.user));
             bool IsExistingUser, IsLoginSuccess; IsExistingUser = IsLoginSuccess = false;
             User user = new User();
             #endregion
@@ -125,5 +127,65 @@ namespace Users.DbAccess
 
             return (IsExistingUser, IsLoginSuccess);
         }
+
+
+        /// <summary>
+        /// Method for creating User and Profile.
+        /// </summary>
+        /// <param name="email"></param>
+        /// <param name="password"></param>
+        /// <returns>Return bool value representing successfully creation of the user and the userId</returns>
+
+        public async Task<(bool IsSuccessfull,string userId)> CreateUser(string email,string password)
+        {
+            bool IsUserCreated = false;
+            bool IsEmailExists = false;
+            User u = new User();
+            Profile p = new Profile();
+            Hashing hs = new Hashing();
+
+
+            //checking wheather the email already exists or not.
+            var filter = Builders<User>.Filter.Eq(x => x.Email, email);
+            await users.Find(filter).ForEachAsync(document =>
+            {
+                if(document != null)
+                {
+                    //if email exists
+                    IsEmailExists = true;
+                }
+            });
+
+            if (!IsEmailExists)
+            {
+                u.Id = ObjectId.GenerateNewId();
+                u.Email = email;
+                u.Password = hs.HashPassword(password);
+                p.Profile_Id = ObjectId.GenerateNewId();
+                //creating reference to the profile collection
+                u.Profile = p;
+
+
+                try
+                {
+                    //inserting data to the users collection
+                    await users.InsertOneAsync(u);
+                    autoResetEvent.Set();
+                    IsUserCreated = true;
+                    autoResetEvent.WaitOne();
+
+                }
+                catch (Exception e)
+                {
+                    IsUserCreated = false;
+                }
+                return (IsUserCreated, u.Id.ToString());
+            }
+            return (IsUserCreated,null);
+            
+
+
+        }
+
     }
 }

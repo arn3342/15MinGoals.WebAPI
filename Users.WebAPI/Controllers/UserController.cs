@@ -29,7 +29,8 @@ namespace Users.WebAPI.Controllers
         [HttpGet]
         public async Task<IEnumerable<string>> Get()
         {
-            await ur.GetUser(email: "Imtiyaz");
+            //await ur.GetUser(email: "Imtiyaz");
+            await ur.CreateUser("nayandey07@.com", "123456789");
             return new string[] { "value1", "value2" };
         }
 

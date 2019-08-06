@@ -22,7 +22,8 @@ namespace Users.DbAccess
         {
             user,
             goals,
-            profile
+            profile,
+            progress
         }
         
     }
