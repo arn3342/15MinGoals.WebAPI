@@ -31,6 +31,7 @@ namespace Users.DbAccess
         private MongoDbContext _dbContext;
         private AutoResetEvent autoResetEvent = new AutoResetEvent(false);
         private IMongoCollection<User> users;
+        Hashing hs;
         #endregion
 
         //string ConnectionString = "mongodb+srv://15MinGoals_Admin:arn33423342@15mincluster0-drbj7.mongodb.net/test?retryWrites=true&w=majority";
@@ -38,7 +39,7 @@ namespace Users.DbAccess
         {
             _dbContext = new MongoDbContext(ConnectionString);
             users = _dbContext.Db().GetCollection<User>(nameof(MongoDbContext.Collection.user));
-
+            hs = new Hashing();
         }
 
         /// <summary>
@@ -54,7 +55,7 @@ namespace Users.DbAccess
         /// User user = GetUser("email", "password").Result.ReturnedUser;
         /// </code>
         /// </example>
-        public async Task<(bool UserExists, bool IsSuccessful)> GetUser(string email, string password = "")
+        public async Task<(bool UserExists, bool IsSuccessful, User user)> GetUser(string email, string password = "")
         {
             #region Variables
             bool IsExistingUser, IsLoginSuccess; IsExistingUser = IsLoginSuccess = false;
@@ -63,6 +64,10 @@ namespace Users.DbAccess
 
             #region Checking user's existance
             var filter = Builders<User>.Filter.Eq(x => x.Email, email);
+            if (password != "")
+            {  
+                filter = Builders<User>.Filter.Where(x => x.Email == email && x.Password == hs.HashPassword(password));
+            }
 
             await users.Find(filter).ForEachAsync(document =>
             {
@@ -70,32 +75,19 @@ namespace Users.DbAccess
                 {
                     // User exists
                     IsExistingUser = true;
-                    user = document;
-                    autoResetEvent.Set();
+
+                    // Returing user if email and password matches
+                    if (password != "")
+                    {
+                        user = document;
+                        IsLoginSuccess = true;
+                    }
                 }
             }
             );
-            autoResetEvent.WaitOne();
-
-            #endregion
-            Hashing hs = new Hashing();
-
-            //checking wheather the password matches with the hashed password
-            bool isPassWordVerified = hs.ValidatePassword(password, user.Password);
-
-            #region Matching email & password
-            if(IsExistingUser && isPassWordVerified)
-            {
-                IsLoginSuccess = true;
-            }
-            else
-            {
-                IsLoginSuccess = false;
-            }
-
             #endregion
 
-            return (IsExistingUser, IsLoginSuccess);
+            return (IsExistingUser, IsLoginSuccess, user);
         }
 
 
