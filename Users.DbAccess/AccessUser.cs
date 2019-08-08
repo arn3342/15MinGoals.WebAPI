@@ -61,36 +61,6 @@ namespace Users.DbAccess
             User user = new User();
             #endregion
 
-            #region Test codes
-            //User u = new User();
-            //u.Email = email;
-            //u.Password = pass;
-
-
-
-            //u.Email = "nayan";
-            //u.Password = "12345";
-
-            //user.InsertOne(u);
-
-            //retreving the data from the collection
-
-            //List<User> userList = user.AsQueryable().ToList<User>();
-            //foreach (var i in userList)
-            //{
-            //    Console.WriteLine(i);
-            //}
-
-            //query of the collection data
-            //var results = user.Find(x => x.Email == "nayan").FirstOrDefault();
-            //User u = new User();
-            //u.Email = "Imtiyaz";
-            //u.Password = "123456";
-
-            //users.InsertOne(u);
-            //var result =  users.Find(x => x.Email == email).FirstOrDefault();
-            #endregion
-
             #region Checking user's existance
             var filter = Builders<User>.Filter.Eq(x => x.Email, email);
 
@@ -140,8 +110,8 @@ namespace Users.DbAccess
         {
             bool IsUserCreated = false;
             bool IsEmailExists = false;
-            User u = new User();
-            Profile p = new Profile();
+            User user = new User();
+            Profile profile = new Profile();
             Hashing hs = new Hashing();
 
 
@@ -158,34 +128,29 @@ namespace Users.DbAccess
 
             if (!IsEmailExists)
             {
-                u.Id = ObjectId.GenerateNewId();
-                u.Email = email;
-                u.Password = hs.HashPassword(password);
-                p.Profile_Id = ObjectId.GenerateNewId();
+                user.Id = ObjectId.GenerateNewId();
+                user.Email = email;
+                user.Password = hs.HashPassword(password);
+                profile.Profile_Id = ObjectId.GenerateNewId();
                 //creating reference to the profile collection
-                u.Profile = p;
-
+                user.Profile = profile;
 
                 try
                 {
                     //inserting data to the users collection
-                    await users.InsertOneAsync(u);
+                    await users.InsertOneAsync(user);
                     autoResetEvent.Set();
                     IsUserCreated = true;
                     autoResetEvent.WaitOne();
 
                 }
-                catch (Exception e)
+                catch (Exception ex)
                 {
                     IsUserCreated = false;
                 }
-                return (IsUserCreated, u.Id.ToString());
+                return (IsUserCreated, user.Id.ToString());
             }
             return (IsUserCreated,null);
-            
-
-
         }
-
     }
 }

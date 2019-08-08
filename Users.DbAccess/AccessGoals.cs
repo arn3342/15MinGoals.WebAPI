@@ -109,13 +109,15 @@ namespace Users.DbAccess
             bool IsSuccessful = false;
 
             Goal gl = new Goal();
-            Activity activity = new Activity();
-            activity.Activity_Id = ObjectId.GenerateNewId();
-            activity.Activity_Type = actvty.Activity_Type;
-            activity.Content_Id = actvty.Content_Id;
-            activity.Date = actvty.Date;
-            activity.Time = actvty.Time;
-            activity.Time_Invested = actvty.Time_Invested;
+            Activity activity = new Activity()
+            {
+                Activity_Id = ObjectId.GenerateNewId(),
+                Activity_Type = actvty.Activity_Type,
+                Content_Id = actvty.Content_Id,
+                Date = actvty.Date,
+                Time = actvty.Time,
+                Time_Invested = actvty.Time_Invested
+            };
 
             var goalfilter = Builders<Goal>.Filter.Eq(x => x.Goal_Id, new ObjectId(Goal_Id));
             Goal targetGoal = await goals.Find(goalfilter).FirstOrDefaultAsync();

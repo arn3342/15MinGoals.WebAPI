@@ -59,7 +59,7 @@ namespace Users.DbAccess
         }
 
         /// <summary>
-        /// Method for updating the profile of any user after successfully registration to the system.
+        /// Method for updating the profile of a user.
         /// </summary>
         /// <param name="userId"></param>
         /// <param name="profile"></param>
@@ -68,15 +68,16 @@ namespace Users.DbAccess
         public async Task<bool> EditProfile(string userId, Profile profile)
         {
             bool IsUpdateSuccessfull = false;
-            Profile p = new Profile();
-
-            p.First_Name = profile.First_Name;
-            p.Last_Name = profile.Last_Name;
-            p.Work_Institute = profile.Work_Institute;
-            p.Default_Credential = profile.Default_Credential;
-            p.Country = profile.Country;
-            p.Education_Institute = profile.Education_Institute;
-            p.Tour_Complete = profile.Tour_Complete;
+            Profile p = new Profile()
+            {
+                First_Name = profile.First_Name,
+                Last_Name = profile.Last_Name,
+                Work_Institute = profile.Work_Institute,
+                Default_Credential = profile.Default_Credential,
+                Country = profile.Country,
+                Education_Institute = profile.Education_Institute,
+                Tour_Complete = profile.Tour_Complete
+            };
 
             var UserFilter = Builders<User>.Filter.Eq(x => x.Id, new ObjectId(userId));
             User SelectedUser = await user.Find(UserFilter).FirstOrDefaultAsync();
@@ -95,10 +96,5 @@ namespace Users.DbAccess
             return IsUpdateSuccessfull;
 
         }
-
-
-
-
-        }
     }
-
+}
