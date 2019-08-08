@@ -7,7 +7,7 @@ using Users.Models;
 
 namespace Users.BusinessLayer
 {
-    class ProfileRepository
+    public class ProfileRepository
     {
         AccessProfile ap;
         public async Task<User> GetProfile(string email, string password)

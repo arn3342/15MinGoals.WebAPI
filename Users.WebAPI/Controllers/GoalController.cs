@@ -19,7 +19,7 @@ namespace Users.WebAPI.Controllers
             goalRepository = new GoalRepository(Startup.ConnectionString);
         }
         // GET: api/values
-        [HttpGet]
+        [HttpGet("getgoals")]
         public async Task<IEnumerable<string>> GetGoals(string Profile_Id)
         {
 
@@ -30,7 +30,7 @@ namespace Users.WebAPI.Controllers
         }
 
         // GET api/values/5
-        [HttpGet("{id}")]
+        [HttpGet]
         public async Task<string> Get(int profile_id)
         {
             return "value";

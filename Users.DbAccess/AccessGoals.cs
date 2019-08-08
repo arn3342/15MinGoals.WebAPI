@@ -155,8 +155,6 @@ namespace Users.DbAccess
 
         public async Task<(bool IsCreated, bool IsUpdated)> CreateUpdateProgress(string Goal_Id, string CurrentCourse_Id)
         {
-            bool IsCreate = false;
-            bool IsUpdate = false;
 
             Progress progress = new Progress();
             progress = await progresses.Find(p => p.Goal_Id == Goal_Id).FirstOrDefaultAsync();
