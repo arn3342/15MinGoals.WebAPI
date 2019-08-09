@@ -47,7 +47,6 @@ namespace Users.DbAccess
         /// <returns> Return a boolean value that represents wheater the update is successfull or not.</returns>
         public async Task<bool> EditProfile(User user)
         {
-            
             Profile SelectedProfile = await GetProfile(user.Email, user.Password);
 
             bool IsUpdateSuccessfull = false;

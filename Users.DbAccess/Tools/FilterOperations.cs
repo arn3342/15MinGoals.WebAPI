@@ -1,7 +1,5 @@
 ﻿using MongoDB.Driver;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Users.DbAccess.Tools
 {
@@ -28,19 +26,22 @@ namespace Users.DbAccess.Tools
             {
                 foreach (var property in Child.GetType().GetProperties())
                 {
-                    var value = property.GetValue(Parent.GetType().GetProperty(Child.GetType().Name).GetValue(Parent));
+                    var value = property.GetValue(Child);
                     var oldValue = property.GetValue(comparingObject);
-
-                    if (value != null)
+                    var CheckDefault = new object();
+                    if (value == null)
                     {
-                        var CheckDefault = ValueChecker.GetDefaultValue(value.GetType());
-                        if (!value.Equals(CheckDefault))
+                        CheckDefault = ValueChecker.ConvertObjectToString(value);
+                    }
+                    else { CheckDefault = ValueChecker.GetDefaultValue(value.GetType()); }
+
+                    if (value != CheckDefault)
+                    {
+                        if (oldValue == null) oldValue = ValueChecker.ConvertObjectToString(oldValue);
+                        if (value != null && value.ToString() != oldValue.ToString())
                         {
-                            if (value != oldValue)
-                            {
-                                string field_name = property.Name;
-                                updates.Add(update_filter.Set(Child.GetType().Name + "." + field_name, value));
-                            }
+                            string field_name = property.Name;
+                            updates.Add(update_filter.Set(Child.GetType().Name + "." + field_name, value));
                         }
                     }
                 }

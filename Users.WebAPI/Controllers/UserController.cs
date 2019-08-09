@@ -25,8 +25,6 @@ namespace Users.WebAPI.Controllers
         {
             return null;
         }
-
-
         // GET: api/User
         [HttpGet]
         public async Task<IEnumerable<string>> Get()
@@ -37,10 +35,10 @@ namespace Users.WebAPI.Controllers
                 Password = "arn3342",
                 Profile = new Profile
                 {
-                    Profile_Img_Url = "www.google.com"
+                    First_Name = "Aousaf",
+                    Last_Name = "Rashid"
                 }
             };
-            //await ur.CreateUser("nabilrashid44@gmail.com", "aousaf3342");
             await ur.EditProfile(user);
             //await ur.GetUser(email: "Imtiyaz");
             //await ur.CreateUser(user);

@@ -14,7 +14,7 @@ namespace Users.DbAccess.Tools
             }
             else
             {
-                return null;
+                return ConvertObjectToString(t);
             }
         }
         public static string ConvertObjectToString(object obj)
