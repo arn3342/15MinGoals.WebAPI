@@ -48,7 +48,6 @@ namespace Users.DbAccess
         /// <returns>returns A tuple of Boolean HasGoal and List of Goal List<Goal></returns>
         public async Task<(bool HasGoal, List<Goal> AllGoals)> GetGoals(string Profile_id)
         {
-            Goal gl = new Goal();
             var goalfilter = Builders<Goal>.Filter.Eq(x => x.Profile_Id, Profile_id);
             bool HasGoal = false;
 
@@ -102,22 +101,12 @@ namespace Users.DbAccess
         /// create Activity in Goal documnet as a nested array of Activity with unique activity id 
         /// </summary>
         /// <param name="Goal_Id"></param>
-        /// <param name="actvty"></param>
+        /// <param name="activity"></param>
         /// <returns>return a bollean if issuccessful or not</returns>
-        public async Task<bool> CreateActivity(string Goal_Id, Activity actvty)
+        public async Task<bool> CreateActivity(string Goal_Id, Activity activity)
         {
             bool IsSuccessful = false;
-
-            Goal gl = new Goal();
-            Activity activity = new Activity()
-            {
-                Activity_Id = ObjectId.GenerateNewId(),
-                Activity_Type = actvty.Activity_Type,
-                Content_Id = actvty.Content_Id,
-                Date = actvty.Date,
-                Time = actvty.Time,
-                Time_Invested = actvty.Time_Invested
-            };
+            activity.Activity_Id = ObjectId.GenerateNewId();
 
             var goalfilter = Builders<Goal>.Filter.Eq(x => x.Goal_Id, new ObjectId(Goal_Id));
             Goal targetGoal = await goals.Find(goalfilter).FirstOrDefaultAsync();
@@ -126,10 +115,10 @@ namespace Users.DbAccess
             /// update.set for updating particular field
             try
             {
-                await goals.UpdateOneAsync<Goal>(tg => tg.Goal_Id == new ObjectId(Goal_Id), updateGoal);
+                await goals.UpdateOneAsync(tg => tg.Goal_Id == new ObjectId(Goal_Id), updateGoal);
                 IsSuccessful = true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 IsSuccessful = false;
             }
@@ -153,7 +142,7 @@ namespace Users.DbAccess
             return activites;
         }
 
-        public async Task<(bool IsCreated, bool IsUpdated)> CreateUpdateProgress(string Goal_Id, string CurrentCourse_Id)
+        public async Task<(bool IsCreated, bool IsUpdated)> CreateUpdateProgress(string Goal_Id, string CurrentCourse_Id = "")
         {
 
             Progress progress = new Progress();

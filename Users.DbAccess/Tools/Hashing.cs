@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using BCrypt.Net;
 
-namespace Users.DbAccess
+namespace Users.DbAccess.Tools
 {
     public class Hashing
     {

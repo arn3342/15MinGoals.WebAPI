@@ -23,15 +23,15 @@ namespace Users.BusinessLayer
             return (true, true);
         }
 
-        public async Task<(bool IsSuccessfull, string userId)> CreateUser(string email, string password)
+        public async Task<(bool IsSuccessfull, string userId)> CreateUser(User user)
         {
-            await au.CreateUser(email, password);
+            await au.CreateUser(user);
             return (true, "hello");
         }
 
-        public async Task<bool> EditProfile(string userId, Profile profile)
+        public async Task<bool> EditProfile(User user)
         {
-            return await ap.EditProfile(userId, profile);
+            return await ap.EditProfile(user);
         }
 
 

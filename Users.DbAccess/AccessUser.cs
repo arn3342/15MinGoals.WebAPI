@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -7,7 +8,7 @@ using MongoDB.Bson;
 using MongoDB.Driver;
 using Users.DbAccess.Interfaces;
 using Users.Models;
-
+using Users.DbAccess.Tools;
 
 namespace Users.DbAccess
 {
@@ -29,12 +30,10 @@ namespace Users.DbAccess
 
         #region Global Variables
         private MongoDbContext _dbContext;
-        private AutoResetEvent autoResetEvent = new AutoResetEvent(false);
         private IMongoCollection<User> users;
         Hashing hs;
         #endregion
 
-        //string ConnectionString = "mongodb+srv://15MinGoals_Admin:arn33423342@15mincluster0-drbj7.mongodb.net/test?retryWrites=true&w=majority";
         public AccessUser(string ConnectionString)
         {
             _dbContext = new MongoDbContext(ConnectionString);
@@ -64,10 +63,6 @@ namespace Users.DbAccess
 
             #region Checking user's existance
             var filter = Builders<User>.Filter.Eq(x => x.Email, email);
-            if (password != "")
-            {  
-                filter = Builders<User>.Filter.Where(x => x.Email == email && x.Password == hs.HashPassword(password));
-            }
 
             await users.Find(filter).ForEachAsync(document =>
             {
@@ -77,11 +72,15 @@ namespace Users.DbAccess
                     IsExistingUser = true;
 
                     // Returing user if email and password matches
-                    if (password != "")
+                    if (password != null && hs.ValidatePassword(password, document.Password))
                     {
                         user = document;
                         IsLoginSuccess = true;
                     }
+                }
+                else
+                {
+                    user = null;
                 }
             }
             );
@@ -98,51 +97,32 @@ namespace Users.DbAccess
         /// <param name="password"></param>
         /// <returns>Return bool value representing successfully creation of the user and the userId</returns>
 
-        public async Task<(bool IsSuccessfull,string userId)> CreateUser(string email,string password)
+        public async Task<(bool IsSuccessfull, string userId)> CreateUser(User user)
         {
-            bool IsUserCreated = false;
-            bool IsEmailExists = false;
-            User user = new User();
-            Profile profile = new Profile();
-            Hashing hs = new Hashing();
+            var AsyncUserCall = await GetUser(user.Email);
+            bool userExists = AsyncUserCall.UserExists;
 
-
-            //checking wheather the email already exists or not.
-            var filter = Builders<User>.Filter.Eq(x => x.Email, email);
-            await users.Find(filter).ForEachAsync(document =>
+            if (userExists)
             {
-                if(document != null)
-                {
-                    //if email exists
-                    IsEmailExists = true;
-                }
-            });
-
-            if (!IsEmailExists)
+                return (false, null);
+            }
+            else
             {
                 user.Id = ObjectId.GenerateNewId();
-                user.Email = email;
-                user.Password = hs.HashPassword(password);
-                profile.Profile_Id = ObjectId.GenerateNewId();
-                //creating reference to the profile collection
-                user.Profile = profile;
+                user.Password = hs.HashPassword(user.Password);
+                user.Profile.Profile_Id = ObjectId.GenerateNewId();
 
                 try
                 {
                     //inserting data to the users collection
                     await users.InsertOneAsync(user);
-                    autoResetEvent.Set();
-                    IsUserCreated = true;
-                    autoResetEvent.WaitOne();
-
+                    return (true, user.Id.ToString());
                 }
                 catch (Exception ex)
                 {
-                    IsUserCreated = false;
+                    return (false, null);
                 }
-                return (IsUserCreated, user.Id.ToString());
             }
-            return (IsUserCreated,null);
         }
     }
 }

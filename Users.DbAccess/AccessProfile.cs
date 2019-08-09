@@ -3,6 +3,7 @@ using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Users.DbAccess.Tools;
 using Users.Models;
 
 namespace Users.DbAccess
@@ -10,14 +11,14 @@ namespace Users.DbAccess
     public class AccessProfile
     {
         private MongoDbContext _dbContext;
-        private IMongoCollection<User> user;
+        private IMongoCollection<User> userCollection;
         private AccessUser accessUser;
         private User SelectedUser;
 
         public AccessProfile(string ConnectionString)
         {
             _dbContext = new MongoDbContext(ConnectionString);
-            user = _dbContext.Db().GetCollection<User>(nameof(MongoDbContext.Collection.user));
+            userCollection = _dbContext.Db().GetCollection<User>(nameof(MongoDbContext.Collection.user));
             accessUser = new AccessUser(ConnectionString);
         }
 
@@ -44,35 +45,17 @@ namespace Users.DbAccess
         /// <param name="userId"></param>
         /// <param name="profile"></param>
         /// <returns> Return a boolean value that represents wheater the update is successfull or not.</returns>
-        public async Task<bool> EditProfile(string email, string password, Profile profile)
+        public async Task<bool> EditProfile(User user)
         {
-            #region Variables
+            
+            Profile SelectedProfile = await GetProfile(user.Email, user.Password);
+
             bool IsUpdateSuccessfull = false;
-            var update_profile = Builders<User>.Update;
-            var updates = new List<UpdateDefinition<User>>();
-
-            Profile SelectedProfile = await GetProfile(email, password);
-            #endregion
-
-
-            #region Looping through properties of Profile class
-            foreach (var property in typeof(Profile).GetProperties())
-            {
-                var value = property.GetValue(profile);
-                var oldValue = property.GetValue(SelectedProfile);
-
-                if (value != oldValue)
-                {
-                    string field_name = property.Name;
-                    updates.Add(update_profile.Set("Profile." + field_name, value));
-                }
-            }
-            #endregion
-
             #region Updating + catching exception
             try
             {
-                await user.UpdateOneAsync(usr => usr.Id == SelectedUser.Id, update_profile.Combine(updates));
+                FilterOperations filterOperations = new FilterOperations();
+                await userCollection.UpdateOneAsync(usr => usr.Id == SelectedUser.Id, filterOperations.BuildUpdateFilter<User>(user, SelectedProfile, user.Profile));
                 IsUpdateSuccessfull = true;
             }
             catch (Exception e)
@@ -80,11 +63,7 @@ namespace Users.DbAccess
                 IsUpdateSuccessfull = false;
             }
             #endregion
-
             return IsUpdateSuccessfull;
-
         }
-
     }
 }
-

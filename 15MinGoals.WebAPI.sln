@@ -7,11 +7,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Users.WebAPI", "Users.WebAP
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Users.UnitTest", "Users.UnitTest\Users.UnitTest.csproj", "{64C81FCF-D7AE-459C-85A4-8C7E4D033A64}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Users.Models", "Users.Models\Users.Models.csproj", "{F9B62C1E-E6F5-40FA-88F3-0EA356719F9F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Users.Models", "Users.Models\Users.Models.csproj", "{F9B62C1E-E6F5-40FA-88F3-0EA356719F9F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Users.DbAccess", "Users.DbAccess\Users.DbAccess.csproj", "{3DD638E9-1A81-47E4-B0B6-E87A7D1CD7DC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Users.DbAccess", "Users.DbAccess\Users.DbAccess.csproj", "{3DD638E9-1A81-47E4-B0B6-E87A7D1CD7DC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Users.BusinessLayer", "Users.BusinessLayer\Users.BusinessLayer.csproj", "{5CA43C04-979A-43AE-BD00-15C55BC255E8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Users.BusinessLayer", "Users.BusinessLayer\Users.BusinessLayer.csproj", "{5CA43C04-979A-43AE-BD00-15C55BC255E8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
