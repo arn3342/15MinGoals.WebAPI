@@ -32,14 +32,16 @@ namespace Users.WebAPI.Controllers
             User user = new User()
             {
                 Email = "nabil3342@gmail.com",
-                Password = "arn3342",
+                Password = "aousaf3342",
                 Profile = new Profile
                 {
+                    Profile_Id = ObjectId.GenerateNewId(),
                     First_Name = "Aousaf",
                     Last_Name = "Rashid"
                 }
             };
-            await ur.EditProfile(user);
+            //await ur.EditProfile(user);
+            await ur.EditProfile(user, newUser: user);
             //await ur.GetUser(email: "Imtiyaz");
             //await ur.CreateUser(user);
             return new string[] { "value1", "value2" };

@@ -14,6 +14,7 @@ namespace Users.DbAccess
         private IMongoCollection<User> userCollection;
         private AccessUser accessUser;
         private User SelectedUser;
+        private Hashing hs = new Hashing();
 
         public AccessProfile(string ConnectionString)
         {
@@ -29,14 +30,14 @@ namespace Users.DbAccess
         /// <param name="password"></param>
         /// <returns>Returns a user object where we have the reference of the profile collection.So we can reterieve 
         /// the profile data from here</returns>
-        public async Task<Profile> GetProfile(string email, string password)
+        public async Task<(Profile profile, User user)> GetProfile(string email, string password)
         {
             #region variables
             var AsyncUserCall = await accessUser.GetUser(email, password);
             SelectedUser = AsyncUserCall.user;
             #endregion
 
-            return SelectedUser.Profile;
+            return (SelectedUser.Profile, SelectedUser);
         }
 
         /// <summary>
@@ -45,16 +46,29 @@ namespace Users.DbAccess
         /// <param name="userId"></param>
         /// <param name="profile"></param>
         /// <returns> Return a boolean value that represents wheater the update is successfull or not.</returns>
-        public async Task<bool> EditProfile(User user)
+        public async Task<bool> EditProfile(User user, User newUser = null)
         {
-            Profile SelectedProfile = await GetProfile(user.Email, user.Password);
+            var AsyncProfileCall = await GetProfile(user.Email, user.Password);
+            Profile SelectedProfile = AsyncProfileCall.profile;
+            User SelectedUser = AsyncProfileCall.user;
 
             bool IsUpdateSuccessfull = false;
             #region Updating + catching exception
             try
             {
                 FilterOperations filterOperations = new FilterOperations();
-                await userCollection.UpdateOneAsync(usr => usr.Id == SelectedUser.Id, filterOperations.BuildUpdateFilter<User>(user, SelectedProfile, user.Profile));
+                if (newUser == null)
+                {
+                    await userCollection.UpdateOneAsync(usr => usr.Id == SelectedUser.Id, filterOperations.BuildUpdateFilter<User>(user, SelectedProfile, user.Profile));
+                }
+                else
+                {
+                    if (!hs.ValidatePassword(newUser.Password, SelectedUser.Password))
+                    {
+                        newUser.Password = hs.HashPassword(newUser.Password);
+                    }
+                    await userCollection.UpdateOneAsync(usr => usr.Id == SelectedUser.Id, filterOperations.BuildUpdateFilter<User>(newUser, SelectedUser));
+                }
                 IsUpdateSuccessfull = true;
             }
             catch (Exception e)

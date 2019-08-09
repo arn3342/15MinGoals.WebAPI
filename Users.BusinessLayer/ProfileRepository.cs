@@ -15,7 +15,8 @@ namespace Users.BusinessLayer
         {
             if (!string.IsNullOrEmpty(user.Email) && !string.IsNullOrEmpty(user.Password))
             {
-                return await ap.GetProfile(user.Email, user.Password);
+                var AsyncProfileCallback = await ap.GetProfile(user.Email, user.Password);
+                return AsyncProfileCallback.profile;
             }
             return (null);
         }

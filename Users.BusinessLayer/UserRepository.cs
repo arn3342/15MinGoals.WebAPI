@@ -29,9 +29,9 @@ namespace Users.BusinessLayer
             return (true, "hello");
         }
 
-        public async Task<bool> EditProfile(User user)
+        public async Task<bool> EditProfile(User user, User newUser = null)
         {
-            return await ap.EditProfile(user);
+            return await ap.EditProfile(user, newUser);
         }
 
 
