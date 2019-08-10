@@ -50,7 +50,7 @@ namespace Users.BusinessLayer
 
         public async Task<(bool IsCreated, bool IsUpdated)> CreateUpdateProgress(string Goal_Id, string CurrentCourse_Id)
         {
-            return await ag.CreateUpdateProgress(Goal_Id, CurrentCourse_Id);
+            return await ag.CreateOrUpdateProgress(Goal_Id, CurrentCourse_Id);
         }
 
 

@@ -71,6 +71,7 @@ namespace Users.DbAccess
                 }
                 IsUpdateSuccessfull = true;
             }
+
             catch (Exception e)
             {
                 IsUpdateSuccessfull = false;

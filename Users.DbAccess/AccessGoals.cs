@@ -8,30 +8,46 @@ using Users.Models;
 
 namespace Users.DbAccess
 {
-
+    /// <summary>
+    /// A class to access/create/modify a user's goals.
+    /// </summary>
     public class AccessGoals
     {
+        /// <summary>A <see cref="MongoDbContext"/>to connect to the database.</summary>
         private MongoDbContext _dbContext;
+        /// <summary>A <see cref="IMongoCollection{Goal}"/> to hold retrieved <see cref="Goal"/>s</summary>
         private IMongoCollection<Goal> goals;
+        /// <summary>A <see cref="IMongoCollection{Progress}"/> to hold retrieved <see cref="Progress"/>s</summary>
         public IMongoCollection<Progress> progresses;
 
 
         private enum ActivityType
         {
+            /// <summary>Defines that the user has watched a video.</summary>
             watched,
+            /// <summary>Defines that the user has completed a test.</summary>
             completed,
+            /// <summary>Defines that the user has listened to an audiobook.</summary>
             listened,
+            /// <summary>Defines that the user has read an article/e-book.</summary>
             read
         }
 
         private enum ProgressType
         {
+            /// <summary>Defines the user's progress of a particular goal as beginner</summary>
             Beginner,
-            Intermidiate,
-            Proffesional
+            /// <summary>Defines the user's progress of a particular goal as intermediate</summary>
+            Intermediate,
+            /// <summary>Defines the user's progress of a particular goal as professional</summary>
+            Professional
         }
 
-
+        /// <summary>
+        /// <para>The constructor.</para> 
+        /// <para>Initializes the class, creates a <see cref="MongoDbContext"/>, returns a <see cref="IMongoCollection{Goal}"/> and a <see cref="IMongoCollection{Progress}"/></para>
+        /// </summary>
+        /// <param name="ConnectionString">The connectionstring to connect to the database.</param>
         public AccessGoals(string ConnectionString)
         {
             _dbContext = new MongoDbContext(ConnectionString);
@@ -41,11 +57,10 @@ namespace Users.DbAccess
 
 
         /// <summary>
-        /// meyhod to get just goals without activities by Profile_Id 
+        /// An asynchronous method to retrieve all goals of a user.
         /// </summary>
-        /// <param name="email"></param>
-        /// <param name="password"></param>
-        /// <returns>returns A tuple of Boolean HasGoal and List of Goal List<Goal></returns>
+        /// <param name="Profile_id">The unique identifier of a user's profile</param>
+        /// <returns>A tuple of <see cref="bool"/> based upon if user has goals and a <see cref="List{Goal}"/> containing all goals</returns>
         public async Task<(bool HasGoal, List<Goal> AllGoals)> GetGoals(string Profile_id)
         {
             var goalfilter = Builders<Goal>.Filter.Eq(x => x.Profile_Id, Profile_id);
@@ -62,13 +77,13 @@ namespace Users.DbAccess
             }
             return (HasGoal, null);
         }
+
         /// <summary>
-        /// Creating Goal using Profile_Id and Goal_Title. First find if the the Goal already exist or not then
-        /// do the creation
+        /// An asynchronous method to create a new goal of a user. 
         /// </summary>
-        /// <param name="Profile_id"></param>
-        /// <param name="Goal_Title"></param>
-        /// <returns></returns>
+        /// <param name="Profile_id">The unique identifier of a user's profile</param>
+        /// <param name="Goal_Title">The title of the goal</param>
+        /// <returns>A tuple of <see cref="bool"/> based upon if insertion was successful, <see cref="bool"/> based upon if goal already exists, <see cref="Goal"/> as the newly created goal.</returns>
         public async Task<(bool IsSuccessful, bool IsExist, Goal NewGoal)> CreateGoal(string Profile_id, string Goal_Title)
         {
             Goal gl = new Goal();
@@ -98,11 +113,11 @@ namespace Users.DbAccess
         }
 
         /// <summary>
-        /// create Activity in Goal documnet as a nested array of Activity with unique activity id 
+        /// An asynchronous method to create a new activity of a goal.
         /// </summary>
-        /// <param name="Goal_Id"></param>
-        /// <param name="activity"></param>
-        /// <returns>return a bollean if issuccessful or not</returns>
+        /// <param name="Goal_Id">The unique identifier of the goal</param>
+        /// <param name="activity">The <see cref="Activity"/> class</param>
+        /// <returns>Return true if the cration/insertion was successful.</returns>
         public async Task<bool> CreateActivity(string Goal_Id, Activity activity)
         {
             bool IsSuccessful = false;
@@ -112,7 +127,6 @@ namespace Users.DbAccess
             Goal targetGoal = await goals.Find(goalfilter).FirstOrDefaultAsync();
             var updateGoal = Builders<Goal>.Update.Push(g => g.Activities, activity);
 
-            /// update.set for updating particular field
             try
             {
                 await goals.UpdateOneAsync(tg => tg.Goal_Id == new ObjectId(Goal_Id), updateGoal);
@@ -126,11 +140,11 @@ namespace Users.DbAccess
         }
 
         /// <summary>
-        /// get the selected activities by finding the goal and fetch activities with limit and skip
+        /// An asynchronous method to get selected activities related to a goal
         /// </summary>
-        /// <param name="Goal_Id"></param>
-        /// <param name="limit"></param>
-        /// <param name="skip"></param>
+        /// <param name="Goal_Id">The unique identifier of the goal</param>
+        /// <param name="limit">The number of activities to return</param>
+        /// <param name="skip">The total number of previously returned activities</param>
         /// <returns></returns>
         public async Task<List<Activity>> GetSelectedActivities(string Goal_Id, int limit = 1, int skip = 0)
         {
@@ -142,7 +156,13 @@ namespace Users.DbAccess
             return activites;
         }
 
-        public async Task<(bool IsCreated, bool IsUpdated)> CreateUpdateProgress(string Goal_Id, string CurrentCourse_Id = "")
+        /// <summary>
+        /// An asynchronous method to create/update the progress of a particular goal.
+        /// </summary>
+        /// <param name="Goal_Id">The unique identifier of the goal</param>
+        /// <param name="CurrentCourse_Id">The unique identifier of the currently following course(optional)</param>
+        /// <returns>True if the creation and/or updating was successful</returns>
+        public async Task<(bool IsCreated, bool IsUpdated)> CreateOrUpdateProgress(string Goal_Id, string CurrentCourse_Id = "")
         {
 
             Progress progress = new Progress();
@@ -176,20 +196,36 @@ namespace Users.DbAccess
             }
         }
 
+        /// <summary>
+        /// A function to calculate the points of a goal.
+        /// </summary>
+        /// <param name="prevXp">Current xp poins of the goal</param>
+        /// <returns>The total points as an <see cref="int"/></returns>
         private int SetGoalPoints(int prevXp)
         {
             int xp = prevXp + 10;
             return xp;
         }
 
+        /// <summary>
+        /// A function to determine/set a goal's level.
+        /// </summary>
+        /// <param name="xp">Current xp points of the goal</param>
+        /// <returns>The level of the goal</returns>
+        /// <example>
+        /// <code>
+        /// int CurrentXp = 1200;
+        /// string GoalLevel = SetGoalLevel(CurrentXp);
+        /// </code>
+        /// </example>
         private string SetGoalLevel(int xp)
         {
             if (xp < 500)
                 return nameof(ProgressType.Beginner);
             else if (xp < 1500)
-                return nameof(ProgressType.Intermidiate);
+                return nameof(ProgressType.Intermediate);
             else
-                return nameof(ProgressType.Proffesional);
+                return nameof(ProgressType.Professional);
         }
     }
 }

@@ -9,8 +9,22 @@ namespace Users.DbAccess.Tools
     public class FilterOperations
     {
         /// <summary>
-        /// Generates an UpdateDefinition of any given type.
+        /// Generates a <see cref="MongoDB.Driver.UpdateDefinition{TDocument}"/> of any given type.
         /// </summary>
+        /// <example>
+        /// If you want to update a parent model/object :
+        /// <code>
+        /// var parentModel = new ParentModel() { Id = 123, First_Name = "Brian };
+        /// var comparingObjectModel = objectReturnedFromDatabase
+        /// var childModel = new ChildModel() { Id = 456, Field_1 = "Test" }
+        /// FilterOperations filterOptions = new FilterOperations();
+        /// var UpdateDefinition<ParentClass>filterOperations.BuildUpdateFilter<ParentClass>(parentModel, comparingObjectModel);
+        /// </code>
+        /// If you want to update a child object/model inside a parent object/model, call the function as follows :
+        /// <code>
+        /// var UpdateDefinition<ChildClass>filterOperations.BuildUpdateFilter<ChildClass>(parentModel, comparingObjectModel, childModel);
+        /// </code>
+        /// </example>
         /// <typeparam name="T"></typeparam>
         /// <param name="Parent">The parent object</param>
         /// <param name="comparingObject">The comparing object</param>
