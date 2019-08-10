@@ -60,7 +60,7 @@ namespace Users.DbAccess
         /// An asynchronous method to retrieve all goals of a user.
         /// </summary>
         /// <param name="Profile_id">The unique identifier of a user's profile</param>
-        /// <returns>A tuple of <see cref="bool"/> based upon if user has goals and a <see cref="List{Goal}"/> containing all goals</returns>
+        /// <returns>Returns true if user has goals, <see cref="List{Goal}"/> containing all goals./returns>
         public async Task<(bool HasGoal, List<Goal> AllGoals)> GetGoals(string Profile_id)
         {
             var goalfilter = Builders<Goal>.Filter.Eq(x => x.Profile_Id, Profile_id);
@@ -83,7 +83,7 @@ namespace Users.DbAccess
         /// </summary>
         /// <param name="Profile_id">The unique identifier of a user's profile</param>
         /// <param name="Goal_Title">The title of the goal</param>
-        /// <returns>A tuple of <see cref="bool"/> based upon if insertion was successful, <see cref="bool"/> based upon if goal already exists, <see cref="Goal"/> as the newly created goal.</returns>
+        /// <returns>Returns true if creation was successful, true if goal already exists, <see cref="Goal"/> as the newly created goal.</returns>
         public async Task<(bool IsSuccessful, bool IsExist, Goal NewGoal)> CreateGoal(string Profile_id, string Goal_Title)
         {
             Goal gl = new Goal();
@@ -117,7 +117,7 @@ namespace Users.DbAccess
         /// </summary>
         /// <param name="Goal_Id">The unique identifier of the goal</param>
         /// <param name="activity">The <see cref="Activity"/> class</param>
-        /// <returns>Return true if the cration/insertion was successful.</returns>
+        /// <returns>Returns true if the cration/insertion was successful.</returns>
         public async Task<bool> CreateActivity(string Goal_Id, Activity activity)
         {
             bool IsSuccessful = false;
@@ -200,7 +200,7 @@ namespace Users.DbAccess
         /// A function to calculate the points of a goal.
         /// </summary>
         /// <param name="prevXp">Current xp poins of the goal</param>
-        /// <returns>The total points as an <see cref="int"/></returns>
+        /// <returns>Return total points as an <see cref="int"/></returns>
         private int SetGoalPoints(int prevXp)
         {
             int xp = prevXp + 10;
@@ -211,7 +211,7 @@ namespace Users.DbAccess
         /// A function to determine/set a goal's level.
         /// </summary>
         /// <param name="xp">Current xp points of the goal</param>
-        /// <returns>The level of the goal</returns>
+        /// <returns>Returns the level of the goal as a <see cref="string"/></returns>
         /// <example>
         /// <code>
         /// int CurrentXp = 1200;
