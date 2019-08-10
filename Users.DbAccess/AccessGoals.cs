@@ -145,7 +145,7 @@ namespace Users.DbAccess
         /// <param name="Goal_Id">The unique identifier of the goal</param>
         /// <param name="limit">The number of activities to return</param>
         /// <param name="skip">The total number of previously returned activities</param>
-        /// <returns></returns>
+        /// <returns>Returns a <see cref="List{Activity}"/> containing all activities.</returns>
         public async Task<List<Activity>> GetSelectedActivities(string Goal_Id, int limit = 1, int skip = 0)
         {
             var proj = Builders<Goal>.Projection.Slice(g => g.Activities, skip, limit);
@@ -161,7 +161,7 @@ namespace Users.DbAccess
         /// </summary>
         /// <param name="Goal_Id">The unique identifier of the goal</param>
         /// <param name="CurrentCourse_Id">The unique identifier of the currently following course(optional)</param>
-        /// <returns>True if the creation and/or updating was successful</returns>
+        /// <returns>Returns true if the creation was successful, true if updating was successful</returns>
         public async Task<(bool IsCreated, bool IsUpdated)> CreateOrUpdateProgress(string Goal_Id, string CurrentCourse_Id = "")
         {
 
@@ -200,7 +200,7 @@ namespace Users.DbAccess
         /// A function to calculate the points of a goal.
         /// </summary>
         /// <param name="prevXp">Current xp poins of the goal</param>
-        /// <returns>Return total points as an <see cref="int"/></returns>
+        /// <returns>Returns total points as an <see cref="int"/></returns>
         private int SetGoalPoints(int prevXp)
         {
             int xp = prevXp + 10;
