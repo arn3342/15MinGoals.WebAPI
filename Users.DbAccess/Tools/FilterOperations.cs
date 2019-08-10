@@ -31,7 +31,7 @@ namespace Users.DbAccess.Tools
         /// <param name="Child">The child object(optional)</param>
         /// <param name="IsUpdatingArray">Bool to determine if child should be pushed in an array.</param>
         /// <returns>An <c>UpdateDefition</c> of any given type.</returns>
-        public UpdateDefinition<T> BuildUpdateFilter<T>(object Parent, object comparingObject = null, object Child = null, object ArrayProperty= null)
+        public static UpdateDefinition<T> BuildUpdateFilter<T>(object Parent, object comparingObject = null, object Child = null, object ArrayProperty= null)
         {
             UpdateDefinitionBuilder<T> update_filter = Builders<T>.Update;
             List<UpdateDefinition<T>> updates = new List<UpdateDefinition<T>>();
@@ -56,7 +56,7 @@ namespace Users.DbAccess.Tools
                         if (value != CheckDefault)
                         {
                             if (oldValue == null) oldValue = ValueChecker.ConvertObjectToString(oldValue);
-                            if (value != null && value.ToString() != oldValue.ToString())
+                            if (value != null && value.ToString() != oldValue.ToString() && value.ToString() != CheckDefault.ToString())
                             {
                                 string field_name = property.Name;
                                 updates.Add(update_filter.Set(Child.GetType().Name + "." + field_name, value));
@@ -81,10 +81,10 @@ namespace Users.DbAccess.Tools
                         }
                         else { CheckDefault = ValueChecker.GetDefaultValue(value.GetType()); }
 
-                        if (!value.Equals(CheckDefault))
+                        if (value != CheckDefault)
                         {
                             if (oldValue == null) oldValue = ValueChecker.ConvertObjectToString(oldValue);
-                            if (value != null && value.ToString() != oldValue.ToString())
+                            if (value != null && value.ToString() != oldValue.ToString() && value.ToString() != CheckDefault.ToString())
                             {
                                 string field_name = property.Name;
                                 updates.Add(update_filter.Set(field_name, value));
