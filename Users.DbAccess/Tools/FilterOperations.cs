@@ -27,10 +27,11 @@ namespace Users.DbAccess.Tools
         /// </example>
         /// <typeparam name="T"></typeparam>
         /// <param name="Parent">The parent object</param>
-        /// <param name="comparingObject">The comparing object</param>
+        /// <param name="comparingObject">The comparing object(optional)</param>
         /// <param name="Child">The child object(optional)</param>
+        /// <param name="IsUpdatingArray">Bool to determine if child should be pushed in an array.</param>
         /// <returns>An <c>UpdateDefition</c> of any given type.</returns>
-        public UpdateDefinition<T> BuildUpdateFilter<T>(object Parent, object comparingObject, object Child = null)
+        public UpdateDefinition<T> BuildUpdateFilter<T>(object Parent, object comparingObject = null, object Child = null, bool IsUpdatingArray = false)
         {
             UpdateDefinitionBuilder<T> update_filter = Builders<T>.Update;
             List<UpdateDefinition<T>> updates = new List<UpdateDefinition<T>>();
@@ -69,19 +70,24 @@ namespace Users.DbAccess.Tools
                 {
                     var value = property.GetValue(Parent);
                     var oldValue = property.GetValue(comparingObject);
+                    var CheckDefault = new object();
 
-                    if (value != null)
+                    if (value == null)
                     {
-                        var CheckDefault = ValueChecker.GetDefaultValue(value.GetType());
-                        if (!value.Equals(CheckDefault))
+                        CheckDefault = ValueChecker.ConvertObjectToString(value);
+                    }
+                    else { CheckDefault = ValueChecker.GetDefaultValue(value.GetType()); }
+
+                    if (!value.Equals(CheckDefault))
+                    {
+                        if (oldValue == null) oldValue = ValueChecker.ConvertObjectToString(oldValue);
+                        if (value != null && value.ToString() != oldValue.ToString())
                         {
-                            if (value != oldValue)
-                            {
-                                string field_name = property.Name;
-                                updates.Add(update_filter.Set(field_name, value));
-                            }
+                            string field_name = property.Name;
+                            updates.Add(update_filter.Set(field_name, value));
                         }
                     }
+
                 }
             }
             #endregion
