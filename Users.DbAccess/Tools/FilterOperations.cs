@@ -31,64 +31,76 @@ namespace Users.DbAccess.Tools
         /// <param name="Child">The child object(optional)</param>
         /// <param name="IsUpdatingArray">Bool to determine if child should be pushed in an array.</param>
         /// <returns>An <c>UpdateDefition</c> of any given type.</returns>
-        public UpdateDefinition<T> BuildUpdateFilter<T>(object Parent, object comparingObject = null, object Child = null, bool IsUpdatingArray = false)
+        public UpdateDefinition<T> BuildUpdateFilter<T>(object Parent, object comparingObject = null, object Child = null, object ArrayProperty= null)
         {
             UpdateDefinitionBuilder<T> update_filter = Builders<T>.Update;
             List<UpdateDefinition<T>> updates = new List<UpdateDefinition<T>>();
 
-            #region Modifying a child document
-            if (Child != null)
+            #region Not updaing an array
+            if (ArrayProperty == null)
             {
-                foreach (var property in Child.GetType().GetProperties())
+                #region Modifying a child document
+                if (Child != null)
                 {
-                    var value = property.GetValue(Child);
-                    var oldValue = property.GetValue(comparingObject);
-                    var CheckDefault = new object();
-                    if (value == null)
+                    foreach (var property in Child.GetType().GetProperties())
                     {
-                        CheckDefault = ValueChecker.ConvertObjectToString(value);
-                    }
-                    else { CheckDefault = ValueChecker.GetDefaultValue(value.GetType()); }
-
-                    if (value != CheckDefault)
-                    {
-                        if (oldValue == null) oldValue = ValueChecker.ConvertObjectToString(oldValue);
-                        if (value != null && value.ToString() != oldValue.ToString())
+                        var value = property.GetValue(Child);
+                        var oldValue = property.GetValue(comparingObject);
+                        var CheckDefault = new object();
+                        if (value == null)
                         {
-                            string field_name = property.Name;
-                            updates.Add(update_filter.Set(Child.GetType().Name + "." + field_name, value));
+                            CheckDefault = ValueChecker.ConvertObjectToString(value);
+                        }
+                        else { CheckDefault = ValueChecker.GetDefaultValue(value.GetType()); }
+
+                        if (value != CheckDefault)
+                        {
+                            if (oldValue == null) oldValue = ValueChecker.ConvertObjectToString(oldValue);
+                            if (value != null && value.ToString() != oldValue.ToString())
+                            {
+                                string field_name = property.Name;
+                                updates.Add(update_filter.Set(Child.GetType().Name + "." + field_name, value));
+                            }
                         }
                     }
                 }
+                #endregion
+
+                #region Modifying the parent document.
+                else
+                {
+                    foreach (var property in Parent.GetType().GetProperties())
+                    {
+                        var value = property.GetValue(Parent);
+                        var oldValue = property.GetValue(comparingObject);
+                        var CheckDefault = new object();
+
+                        if (value == null)
+                        {
+                            CheckDefault = ValueChecker.ConvertObjectToString(value);
+                        }
+                        else { CheckDefault = ValueChecker.GetDefaultValue(value.GetType()); }
+
+                        if (!value.Equals(CheckDefault))
+                        {
+                            if (oldValue == null) oldValue = ValueChecker.ConvertObjectToString(oldValue);
+                            if (value != null && value.ToString() != oldValue.ToString())
+                            {
+                                string field_name = property.Name;
+                                updates.Add(update_filter.Set(field_name, value));
+                            }
+                        }
+
+                    }
+                }
+                #endregion
             }
             #endregion
 
-            #region Modifying the parent document.
+            #region Updating an Array
             else
             {
-                foreach (var property in Parent.GetType().GetProperties())
-                {
-                    var value = property.GetValue(Parent);
-                    var oldValue = property.GetValue(comparingObject);
-                    var CheckDefault = new object();
-
-                    if (value == null)
-                    {
-                        CheckDefault = ValueChecker.ConvertObjectToString(value);
-                    }
-                    else { CheckDefault = ValueChecker.GetDefaultValue(value.GetType()); }
-
-                    if (!value.Equals(CheckDefault))
-                    {
-                        if (oldValue == null) oldValue = ValueChecker.ConvertObjectToString(oldValue);
-                        if (value != null && value.ToString() != oldValue.ToString())
-                        {
-                            string field_name = property.Name;
-                            updates.Add(update_filter.Set(field_name, value));
-                        }
-                    }
-
-                }
+                updates.Add(update_filter.Push(ArrayProperty.GetType().Name + ".", Child));
             }
             #endregion
             return update_filter.Combine(updates);
