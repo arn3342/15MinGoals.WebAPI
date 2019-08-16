@@ -29,19 +29,22 @@ namespace Users.WebAPI.Controllers
         [HttpGet]
         public async Task<IEnumerable<string>> Get()
         {
+            User NewUser = new User();
+            NewUser.Password = "Nayan";
+
             User user = new User()
             {
-                Email = "nabil3342@gmail.com",
-                Password = "aousaf3342",
+                Email = "nayandey071@iubat.edu",
+                Password = "123456",
                 Profile = new Profile
                 {
-                    Profile_Id = ObjectId.GenerateNewId(),
+                    //Profile_Id = ObjectId.GenerateNewId(),
                     First_Name = "Aousaf",
-                    Last_Name = "Rashid"
+                    Last_Name = "Rashid",
                 }
             };
             //await ur.EditProfile(user);
-            await ur.EditProfile(user, newUser: user);
+            await ur.EditProfile(user, newUser: NewUser);
             //await ur.GetUser(email: "Imtiyaz");
             //await ur.CreateUser(user);
             return new string[] { "value1", "value2" };

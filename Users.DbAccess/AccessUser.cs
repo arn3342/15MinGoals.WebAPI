@@ -99,6 +99,7 @@ namespace Users.DbAccess
 
         public async Task<(bool IsSuccessfull, string userId)> CreateUser(User user)
         {
+            Profile p = new Profile();
             var AsyncUserCall = await GetUser(user.Email);
             bool userExists = AsyncUserCall.UserExists;
 
@@ -110,7 +111,11 @@ namespace Users.DbAccess
             {
                 user.Id = ObjectId.GenerateNewId();
                 user.Password = hs.HashPassword(user.Password);
-                user.Profile.Profile_Id = ObjectId.GenerateNewId();
+                //user.Profile.Profile_Id = ObjectId.GenerateNewId();
+                p.Profile_Id = ObjectId.GenerateNewId();
+                user.Profile = p;
+                
+                
 
                 try
                 {
