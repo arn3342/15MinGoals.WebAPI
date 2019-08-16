@@ -1,8 +1,4 @@
-﻿using MongoDB.Bson;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Users.DbAccess;
 using Users.Models;
 
@@ -11,6 +7,10 @@ namespace Users.BusinessLayer
     public class ProfileRepository
     {
         AccessProfile ap;
+        public ProfileRepository(string conStr)
+        {
+            ap = new AccessProfile(conStr);
+        }
         public async Task<Profile> GetProfile(User user)
         {
             if (!string.IsNullOrEmpty(user.Email) && !string.IsNullOrEmpty(user.Password))
@@ -21,13 +21,9 @@ namespace Users.BusinessLayer
             return (null);
         }
 
-        public async Task<bool> EditProfile(User user)
+        public async Task<bool> EditProfile(User user, User newUser)
         {
-            if (!object.Equals(user.Id, default(ObjectId)))
-            {
-                return await ap.EditProfile(user);
-            }
-            return false;
+            return await ap.EditProfile(user, newUser);
         }
     }
 }

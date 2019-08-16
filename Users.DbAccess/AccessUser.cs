@@ -72,7 +72,7 @@ namespace Users.DbAccess
                     IsExistingUser = true;
 
                     // Returing user if email and password matches
-                    if (password != null && hs.ValidatePassword(password, document.Password))
+                    if (password != null && password != "" && hs.ValidatePassword(password, document.Password))
                     {
                         user = document;
                         IsLoginSuccess = true;
