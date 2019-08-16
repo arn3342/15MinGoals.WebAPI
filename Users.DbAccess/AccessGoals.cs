@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using Users.DbAccess.Tools;
 using Users.Models;
 
 namespace Users.DbAccess
@@ -54,7 +55,6 @@ namespace Users.DbAccess
             goals = _dbContext.Db().GetCollection<Goal>(nameof(MongoDbContext.Collection.goals));
             progresses = _dbContext.Db().GetCollection<Progress>(nameof(MongoDbContext.Collection.progress));
         }
-
 
         /// <summary>
         /// An asynchronous method to retrieve all goals of a user.
@@ -125,11 +125,10 @@ namespace Users.DbAccess
 
             var goalfilter = Builders<Goal>.Filter.Eq(x => x.Goal_Id, new ObjectId(Goal_Id));
             Goal targetGoal = await goals.Find(goalfilter).FirstOrDefaultAsync();
-            var updateGoal = Builders<Goal>.Update.Push(g => g.Activities, activity);
 
             try
             {
-                await goals.UpdateOneAsync(tg => tg.Goal_Id == new ObjectId(Goal_Id), updateGoal);
+                await goals.UpdateOneAsync(tg => tg.Goal_Id == new ObjectId(Goal_Id), FilterOperations.BuildUpdateFilter<Goal>(targetGoal, Child: activity, ArrayProperty: targetGoal.Activities));
                 IsSuccessful = true;
             }
             catch (Exception ex)

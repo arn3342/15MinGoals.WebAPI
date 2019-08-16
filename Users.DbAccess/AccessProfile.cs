@@ -56,10 +56,9 @@ namespace Users.DbAccess
             #region Updating + catching exception
             try
             {
-                FilterOperations filterOperations = new FilterOperations();
                 if (newUser == null)
                 {
-                    await userCollection.UpdateOneAsync(usr => usr.Id == SelectedUser.Id, filterOperations.BuildUpdateFilter<User>(user, SelectedProfile, user.Profile));
+                    await userCollection.UpdateOneAsync(usr => usr.Id == SelectedUser.Id, FilterOperations.BuildUpdateFilter<User>(user, SelectedProfile, user.Profile));
                 }
                 else
                 {
@@ -67,7 +66,7 @@ namespace Users.DbAccess
                     {
                         newUser.Password = hs.HashPassword(newUser.Password);
                     }
-                    await userCollection.UpdateOneAsync(usr => usr.Id == SelectedUser.Id, filterOperations.BuildUpdateFilter<User>(newUser, SelectedUser));
+                    await userCollection.UpdateOneAsync(usr => usr.Id == SelectedUser.Id, FilterOperations.BuildUpdateFilter<User>(newUser, SelectedUser));
                 }
                 IsUpdateSuccessfull = true;
             }
