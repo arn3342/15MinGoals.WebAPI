@@ -20,6 +20,7 @@ namespace Users.DbAccess
         /// <summary>A <see cref="IMongoCollection{Progress}"/> to hold retrieved <see cref="Progress"/>s</summary>
         public IMongoCollection<Progress> progresses;
 
+        private FilterBuilder fl = new FilterBuilder();
 
         private enum ActivityType
         {
@@ -127,7 +128,7 @@ namespace Users.DbAccess
 
             try
             {
-                await goals.UpdateOneAsync(tg => tg.Goal_Id == new ObjectId(Goal_Id), FilterOperations.BuildUpdateFilter<Goal>(targetGoal, Child: activity, ArrayProperty: targetGoal.Activities));
+                await goals.UpdateOneAsync(fl.ToFind<Goal>("Goal_Id", Goal_Id), fl.ToUpdate<Goal>(targetGoal, Child: activity, ArrayProperty: targetGoal.Activities));
                 IsSuccessful = true;
             }
             catch (Exception ex)

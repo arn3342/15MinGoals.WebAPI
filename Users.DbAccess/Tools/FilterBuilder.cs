@@ -1,4 +1,6 @@
-﻿using MongoDB.Driver;
+﻿using MongoDB.Bson;
+using MongoDB.Driver;
+using System;
 using System.Collections.Generic;
 
 namespace Users.DbAccess.Tools
@@ -6,7 +8,7 @@ namespace Users.DbAccess.Tools
     /// <summary>
     /// A class to perform filter operations.
     /// </summary>
-    public class FilterOperations
+    public class FilterBuilder
     {
         /// <summary>
         /// Generates a <see cref="MongoDB.Driver.UpdateDefinition{TDocument}"/> of any given type.
@@ -17,17 +19,17 @@ namespace Users.DbAccess.Tools
         /// var parentObject = new ParentObject() { Id = 123, First_Name = "Brian };
         /// var comparingObjectObject = objectReturnedFromDatabase
         /// var childObject = new ChildObject() { Id = 456, Field_1 = "Test" }
-        /// FilterOperations filterOptions = new FilterOperations();
-        /// var UpdateDefinition<ParentClass>filterOperations.BuildUpdateFilter<ParentClass>(parentObject, comparingObjectObject);
+        /// FilterBuilder filterOptions = new FilterBuilder();
+        /// var UpdateDefinition<ParentClass>FilterBuilder.ToUpdate<ParentClass>(parentObject, comparingObjectObject);
         /// </code>
         /// If you want to update a child object/Object inside a parent object/Object, call the function as follows :
         /// <code>
-        /// var UpdateDefinition<ChildClass>filterOperations.BuildUpdateFilter<ChildClass>(parentObject, comparingObjectObject, childObject);
+        /// var UpdateDefinition<ChildClass>FilterBuilder.ToUpdate<ChildClass>(parentObject, comparingObjectObject, childObject);
         /// </code>
         /// If you want to update an array. call the function as follows :
         /// <code>
         /// /// To update an array of a parent 
-        /// var UpdateDefinition<ChildClass>filterOperations.BuildUpdateFilter<ChildClass>(parentObject, Child: childObject, ArrayProperty: parentObject.ArrayPropertyName);
+        /// var UpdateDefinition<ChildClass>FilterBuilder.ToUpdate<ChildClass>(parentObject, Child: childObject, ArrayProperty: parentObject.ArrayPropertyName);
         /// </code>
         /// </example>
         /// <typeparam name="T"></typeparam>
@@ -36,7 +38,7 @@ namespace Users.DbAccess.Tools
         /// <param name="Child">The child object(optional)</param>
         /// <param name="ArrayProperty">The array property of the parent/child to update.</param>
         /// <returns>An <c>UpdateDefition</c> of any given type.</returns>
-        public static UpdateDefinition<T> BuildUpdateFilter<T>(object Parent, object comparingObject = null, object Child = null, object ArrayProperty = null)
+        public UpdateDefinition<T> ToUpdate<T>(object Parent, object comparingObject = null, object Child = null, object ArrayProperty = null)
         {
             UpdateDefinitionBuilder<T> update_filter = Builders<T>.Update;
             List<UpdateDefinition<T>> updates = new List<UpdateDefinition<T>>();
@@ -109,6 +111,24 @@ namespace Users.DbAccess.Tools
             }
             #endregion
             return update_filter.Combine(updates);
+        }
+
+        public UpdateDefinition<T> ToUpdate<T>(object Parent, object comparingChildObject, object Child)
+        { return null; }
+
+        public UpdateDefinition<T> ToUpdate<T>(object Child, object ArrayProperty)
+        { return null;  }
+
+        public FilterDefinition<T> ToFind<T>(string KeyPropertyName, object Value)
+        {
+            if (KeyPropertyName.ToLower().Contains("id"))
+            {
+                Value = new ObjectId(Value.ToString());
+            }
+            
+            FilterDefinition<T> query_filter = Builders<T>.Filter.Eq(x => x.GetType().GetProperty(KeyPropertyName).GetValue(x), Value);
+
+            return query_filter;
         }
     }
 }

@@ -15,7 +15,7 @@ namespace Users.DbAccess
         private AccessUser accessUser;
         private User SelectedUser;
         private Hashing hs = new Hashing();
-
+        private FilterBuilder fl = new FilterBuilder();
         public AccessProfile(string ConnectionString)
         {
             _dbContext = new MongoDbContext(ConnectionString);
@@ -58,7 +58,7 @@ namespace Users.DbAccess
             {
                 if (newUser == null)
                 {
-                    await userCollection.UpdateOneAsync(usr => usr.Id == SelectedUser.Id, FilterOperations.BuildUpdateFilter<User>(user, SelectedProfile, user.Profile));
+                    await userCollection.UpdateOneAsync(usr => usr.Id == SelectedUser.Id, fl.ToUpdate<User>(user, SelectedProfile, user.Profile));
                 }
                 else
                 {
@@ -66,7 +66,7 @@ namespace Users.DbAccess
                     {
                         newUser.Password = hs.HashPassword(newUser.Password);
                     }
-                    await userCollection.UpdateOneAsync(usr => usr.Id == SelectedUser.Id, FilterOperations.BuildUpdateFilter<User>(newUser, SelectedUser));
+                    await userCollection.UpdateOneAsync(usr => usr.Id == SelectedUser.Id, fl.ToUpdate<User>(newUser, SelectedUser));
                 }
                 IsUpdateSuccessfull = true;
             }
