@@ -53,6 +53,10 @@ namespace Users.BusinessLayer
             return await ag.CreateOrUpdateProgress(Goal_Id, CurrentCourse_Id);
         }
 
+        public async Task<Progress> GetProgressOfGoal(string Goal_Id)
+        {
+            return await ag.GetProgressOfGoal(Goal_Id);
+        }
 
         #endregion
 

@@ -6,8 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 using Users.BusinessLayer;
 using Users.Models;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-
 namespace Users.WebAPI.Controllers
 {
     [Route("api/[controller]")]
@@ -18,73 +16,78 @@ namespace Users.WebAPI.Controllers
         {
             goalRepository = new GoalRepository(Startup.ConnectionString);
         }
-        // GET: api/values
-        [HttpGet("getgoals")]
-        public async Task<IEnumerable<string>> GetGoals(string Profile_Id)
+
+        #region Goal
+        [HttpGet("GetGoals")]
+        public async Task<(ActionResult<bool>, IEnumerable<Goal>)> GetGoals(string Profile_Id)
         {
-
-            await goalRepository.CreateUpdateProgress("5d4445f7429c4e0f9343006d", "ZZZZZ");
-
-            //await goalRepository.GetGoals(Profile_Id= "5d41eab7956d543e2c31e8a1");
-            return null;
+            (bool IsSuccessful, List<Goal> ReturnedGoal) result = await goalRepository.GetGoals(Profile_Id);
+            if (result.IsSuccessful)
+            {
+                return (true, result.ReturnedGoal);
+            }
+            return (StatusCode(400, "No goals found"), null);
         }
 
-        // GET api/values/5
-        [HttpGet]
-        public async Task<string> Get(int profile_id)
+        
+        [HttpPost("CreateGoal")]
+        public async void CreateGoal(string Profile_Id, string Goal_Title)
         {
-            return "value";
+            await goalRepository.CreateGoal(Profile_Id, Goal_Title);
         }
-
-        // POST api/values
-        [HttpPost]
-        public async void CreateGoal(string Profil_Id, string Goal_Title)
-        {
-            await goalRepository.CreateGoal("5d41eab7956d543e2c31e8a1", "Become a Jason Bourn");
-        }
-
-        // PUT api/values/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody]string value)
-        {
-        }
-
-        // DELETE api/values/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
-        }
-
-
-
-        #region Activity
-        [HttpPost]
-        public async void CreateActivity(string Goal_Id,Activity act)
-        {
-            await goalRepository.CreateActivity(Goal_Id,act);
-        }
-        [HttpGet, Route(template: "GetSelectedActivities/{Goal_Id}/{limit}/{skip}")]
-        public async Task<List<Activity>> GetSelectedActivities(string Goal_Id, int limit, int skip)
-        {
-            return await goalRepository.GetSelectedActivities(Goal_Id, limit, skip);
-        }
-
-
         #endregion
 
+        #region Activity   
 
+        [HttpGet("GetSelectedActivities")]
+        public async Task<(ActionResult<bool>, IEnumerable<Activity>)> GetSelectedActivities(string Goal_id, int limit, int skip)
+        {
+            List<Activity> result = await goalRepository.GetSelectedActivities(Goal_id, limit, skip);
+            if (result.Count > 0)
+            {
+                return (StatusCode(201), result);
+            }
+            return (StatusCode(400, "No activities yet!"), null);
+        }
 
+        [HttpPost("CreateActivity")]
+        public async void CreateActivity([FromBody]BuildActivity buildActivity)
+        {
+            await goalRepository.CreateActivity(buildActivity.Goal_Id, buildActivity.activity);
+        }
+        #endregion
 
         #region Progress
-        [HttpPost]
-        public async Task<(bool IsCreated, bool IsUpdated)> CreateUpdateProgress(string Goal_Id, string CurrentCourse_Id)
+        [HttpPost("CreateOrUpdateProgress")]
+        public async Task<(bool IsCreated, bool IsUpdated)> CreateOrUpdateProgress([FromBody]BuildGoalProgress buildGoalProgress)
         {
-            return await goalRepository.CreateUpdateProgress("5d4445f7429c4e0f9343006d", "XXXXXYYYY");
+            return await goalRepository.CreateUpdateProgress(buildGoalProgress.Goal_Id, buildGoalProgress.CurrentCourse_Id);
         }
 
-
+        [HttpGet("GetProgressOfGoal")]
+        public async Task<(ActionResult<bool> HasProgress, Progress)> GetProgressOfGoal(string Goal_Id)
+        {
+            var result = await goalRepository.GetProgressOfGoal(Goal_Id);
+            if (result != null)
+            {
+                return (StatusCode(200), result);
+            }
+            return (StatusCode(404, "No progress yet!"), result);
+        }
         #endregion
 
+        #region Required classes for FromBody
+        public class BuildGoalProgress
+        {
+            public string Goal_Id { get; set; }
+            public string CurrentCourse_Id { get; set; }
+        }
 
+        public class BuildActivity
+        {
+            public string Goal_Id { get; set; }
+            public Activity activity { get; set; }
+        }
+        #endregion
     }
 }

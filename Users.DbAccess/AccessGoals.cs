@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -193,6 +192,12 @@ namespace Users.DbAccess
                 await progresses.UpdateOneAsync<Progress>(p => p.Progress_Id == progress.Progress_Id, updateProgress);
                 return (false,true);
             }
+        }
+
+
+        public async Task<Progress> GetProgressOfGoal(string Goal_Id)
+        {
+            return await progresses.Find(p => p.Goal_Id == Goal_Id).FirstOrDefaultAsync();
         }
 
         /// <summary>
