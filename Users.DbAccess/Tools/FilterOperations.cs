@@ -12,24 +12,29 @@ namespace Users.DbAccess.Tools
         /// Generates a <see cref="MongoDB.Driver.UpdateDefinition{TDocument}"/> of any given type.
         /// </summary>
         /// <example>
-        /// If you want to update a parent model/object :
+        /// If you want to update a parent model/object, only pass the parent model/object and the existing model/object from the database.
         /// <code>
         /// var parentModel = new ParentModel() { Id = 123, First_Name = "Brian };
         /// var comparingObjectModel = objectReturnedFromDatabase
         /// var childModel = new ChildModel() { Id = 456, Field_1 = "Test" }
         /// FilterOperations filterOptions = new FilterOperations();
-        /// var UpdateDefinition<ParentClass>filterOperations.BuildUpdateFilter<ParentClass>(parentModel, comparingObjectModel);
+        /// var UpdateDefinition<ParentClass> = FilterOperations.BuildUpdateFilter<ParentClass>(parentModel, comparingObjectModel);
         /// </code>
-        /// If you want to update a child object/model inside a parent object/model, call the function as follows :
+        /// If you want to update a child object/model inside a parent object/model, pass the parent model, the child-model/object returned from the database to compare, the child model :
         /// <code>
-        /// var UpdateDefinition<ChildClass>filterOperations.BuildUpdateFilter<ChildClass>(parentModel, comparingObjectModel, childModel);
+        /// var UpdateDefinition<ChildClass> = FilterOperations.BuildUpdateFilter<ChildClass>(parentModel, comparingObjectModel, childModel);
+        /// </code>
+        /// If you want to update a parent's array(adding new objects to array), pass the parent model, the child model and the parent's array property. 
+        /// <para>Example</para>
+        /// <code>
+        /// var UpdateDefinition<ParentClass> = FilterOperations.BuildUpdateFilter<ChildClass>(parentModel, Child: childModel, parentModel.ArrayOfChildModel);
         /// </code>
         /// </example>
         /// <typeparam name="T"></typeparam>
         /// <param name="Parent">The parent object</param>
         /// <param name="comparingObject">The comparing object(optional)</param>
         /// <param name="Child">The child object(optional)</param>
-        /// <param name="IsUpdatingArray">Bool to determine if child should be pushed in an array.</param>
+        /// <param name="ArrayProperty">The array property of the parent object</param>
         /// <returns>An <c>UpdateDefition</c> of any given type.</returns>
         public static UpdateDefinition<T> BuildUpdateFilter<T>(object Parent, object comparingObject = null, object Child = null, object ArrayProperty= null)
         {
@@ -103,6 +108,7 @@ namespace Users.DbAccess.Tools
                 updates.Add(update_filter.Push(ArrayProperty.GetType().Name + ".", Child));
             }
             #endregion
+
             return update_filter.Combine(updates);
         }
     }

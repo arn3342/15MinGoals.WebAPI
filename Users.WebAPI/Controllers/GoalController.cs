@@ -72,19 +72,12 @@ namespace Users.WebAPI.Controllers
 
         #endregion
 
-
-
-
         #region Progress
         [HttpPost]
         public async Task<(bool IsCreated, bool IsUpdated)> CreateUpdateProgress(string Goal_Id, string CurrentCourse_Id)
         {
             return await goalRepository.CreateUpdateProgress("5d4445f7429c4e0f9343006d", "XXXXXYYYY");
         }
-
-
         #endregion
-
-
     }
 }
