@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -21,6 +20,7 @@ namespace Users.DbAccess
         /// <summary>A <see cref="IMongoCollection{Progress}"/> to hold retrieved <see cref="Progress"/>s</summary>
         public IMongoCollection<Progress> progresses;
 
+        private FilterBuilder fl = new FilterBuilder();
 
         private enum ActivityType
         {
@@ -128,7 +128,7 @@ namespace Users.DbAccess
 
             try
             {
-                await goals.UpdateOneAsync(tg => tg.Goal_Id == new ObjectId(Goal_Id), FilterOperations.BuildUpdateFilter<Goal>(targetGoal, Child: activity, ArrayProperty: targetGoal.Activities));
+                await goals.UpdateOneAsync(fl.ToFind<Goal>("Goal_Id", Goal_Id), fl.ToUpdate<Goal>(targetGoal, Child: activity, ArrayProperty: targetGoal.Activities));
                 IsSuccessful = true;
             }
             catch (Exception ex)
@@ -193,6 +193,12 @@ namespace Users.DbAccess
                 await progresses.UpdateOneAsync<Progress>(p => p.Progress_Id == progress.Progress_Id, updateProgress);
                 return (false,true);
             }
+        }
+
+
+        public async Task<Progress> GetProgressOfGoal(string Goal_Id)
+        {
+            return await progresses.Find(p => p.Goal_Id == Goal_Id).FirstOrDefaultAsync();
         }
 
         /// <summary>

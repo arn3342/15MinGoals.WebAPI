@@ -55,13 +55,13 @@ namespace Users.WebAPI.Controllers
         }
 
         [HttpPatch("UpdateProfile")]
-        public async Task<ActionResult<bool>> UpdateProfile([FromBody]CombineUser combined)
+        public async Task<ActionResult<bool>> UpdateProfile([FromBody]BuildUser combined)
         {
             await pr.EditProfile(combined.user, combined.newUser);
             return StatusCode(200, "Updated Successfully");
         }
 
-        public class CombineUser
+        public class BuildUser
         {
             public User user { get; set; }
             public User newUser { get; set; }
