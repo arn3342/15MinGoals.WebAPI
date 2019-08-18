@@ -12,26 +12,31 @@ namespace Users.DbAccess.Tools
         /// Generates a <see cref="MongoDB.Driver.UpdateDefinition{TDocument}"/> of any given type.
         /// </summary>
         /// <example>
-        /// If you want to update a parent model/object :
+        /// If you want to update a parent Object/object :
         /// <code>
-        /// var parentModel = new ParentModel() { Id = 123, First_Name = "Brian };
-        /// var comparingObjectModel = objectReturnedFromDatabase
-        /// var childModel = new ChildModel() { Id = 456, Field_1 = "Test" }
+        /// var parentObject = new ParentObject() { Id = 123, First_Name = "Brian };
+        /// var comparingObjectObject = objectReturnedFromDatabase
+        /// var childObject = new ChildObject() { Id = 456, Field_1 = "Test" }
         /// FilterOperations filterOptions = new FilterOperations();
-        /// var UpdateDefinition<ParentClass>filterOperations.BuildUpdateFilter<ParentClass>(parentModel, comparingObjectModel);
+        /// var UpdateDefinition<ParentClass>filterOperations.BuildUpdateFilter<ParentClass>(parentObject, comparingObjectObject);
         /// </code>
-        /// If you want to update a child object/model inside a parent object/model, call the function as follows :
+        /// If you want to update a child object/Object inside a parent object/Object, call the function as follows :
         /// <code>
-        /// var UpdateDefinition<ChildClass>filterOperations.BuildUpdateFilter<ChildClass>(parentModel, comparingObjectModel, childModel);
+        /// var UpdateDefinition<ChildClass>filterOperations.BuildUpdateFilter<ChildClass>(parentObject, comparingObjectObject, childObject);
+        /// </code>
+        /// If you want to update an array. call the function as follows :
+        /// <code>
+        /// /// To update an array of a parent 
+        /// var UpdateDefinition<ChildClass>filterOperations.BuildUpdateFilter<ChildClass>(parentObject, Child: childObject, ArrayProperty: parentObject.ArrayPropertyName);
         /// </code>
         /// </example>
         /// <typeparam name="T"></typeparam>
         /// <param name="Parent">The parent object</param>
         /// <param name="comparingObject">The comparing object(optional)</param>
         /// <param name="Child">The child object(optional)</param>
-        /// <param name="IsUpdatingArray">Bool to determine if child should be pushed in an array.</param>
+        /// <param name="ArrayProperty">The array property of the parent/child to update.</param>
         /// <returns>An <c>UpdateDefition</c> of any given type.</returns>
-        public static UpdateDefinition<T> BuildUpdateFilter<T>(object Parent, object comparingObject = null, object Child = null, object ArrayProperty= null)
+        public static UpdateDefinition<T> BuildUpdateFilter<T>(object Parent, object comparingObject = null, object Child = null, object ArrayProperty = null)
         {
             UpdateDefinitionBuilder<T> update_filter = Builders<T>.Update;
             List<UpdateDefinition<T>> updates = new List<UpdateDefinition<T>>();
