@@ -3,8 +3,6 @@ using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-using System.Reflection;
-using Users.Models;
 
 namespace Users.DbAccess.Tools
 {
@@ -127,7 +125,12 @@ namespace Users.DbAccess.Tools
         {
             UpdateDefinitionBuilder<T> update_filter = Builders<T>.Update;
             List<UpdateDefinition<T>> updates = new List<UpdateDefinition<T>>();
-            updates.Add(update_filter.Push(ArrayProperty.GetType().Name, Parent));
+            var propertyName = ArrayProperty.GetType().Name;
+            if (propertyName.Contains("[") || propertyName.Contains("]"))
+            {
+                propertyName = propertyName.Substring(0, propertyName.Length - 2);
+            }
+            updates.Add(update_filter.Push(propertyName, Parent));
             return update_filter.Combine(updates);
         }
 
@@ -161,7 +164,7 @@ namespace Users.DbAccess.Tools
             }
             FilterDefinitionBuilder<T> query_filter = Builders<T>.Filter;
 
-            FilterDefinition<T> fl = query_filter.Eq("Profile_Id", Value);
+            FilterDefinition<T> fl = query_filter.Eq(Field_Name, Value);
             return fl;
         }
 
@@ -173,7 +176,7 @@ namespace Users.DbAccess.Tools
         /// <param name="limit">The number of documents to fetch.</param>
         /// <param name="skip">The number of documents to skip.</param>
         /// <returns></returns>
-        public ProjectionDefinition<T> ToFindSome<T>(System.Linq.Expressions.Expression<Func<T, object>> expression, int limit, int skip = 0)
+        public ProjectionDefinition<T> ToFindSome<T>(Expression<Func<T, object>> expression, int limit, int skip = 0)
         {
             ProjectionDefinitionBuilder<T> query_filter = Builders<T>.Projection;
             var qr = query_filter.Slice(expression, skip, limit);
@@ -181,17 +184,17 @@ namespace Users.DbAccess.Tools
         }
 
         /// <summary>
-        /// An overload of <see cref="ToFindSome{T}(System.Linq.Expressions.Expression{Func{T, object}}, int, int)"/>, accepts string as field name to simplify the search.
+        /// An overload of <see cref="ToFindSome{T}(Expression{Func{T, object}}, int, int)"/>, accepts string as field name to simplify the search.
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="FieldName">The name of the field of the array/collection, or the name of the collection.</param>
+        /// <param name="Field_Name">The name of the field of the array/collection, or the name of the collection.</param>
         /// <param name="limit"></param>
         /// <param name="skip"></param>
         /// <returns></returns>
-        public ProjectionDefinition<T> ToFindSome<T>(string FieldName, int limit, int skip = 0)
+        public ProjectionDefinition<T> ToFindSome<T>(string Field_Name, int limit, int skip = 0)
         {
             ProjectionDefinitionBuilder<T> query_filter = Builders<T>.Projection;
-            var qr = query_filter.Slice(FieldName, skip, limit);
+            var qr = query_filter.Slice(Field_Name, skip, limit);
             return qr;
         }
     }

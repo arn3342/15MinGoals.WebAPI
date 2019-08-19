@@ -67,7 +67,7 @@ namespace Users.DbAccess
             bool HasGoal = false;
 
             List<Goal> userGoals = await goals.Find(fl.ToFind<Goal>(nameof(Profile_Id), Profile_Id))
-                                       .Project<Goal>(Builders<Goal>.Projection.Exclude(g => g.Activities))
+                                       .Project<Goal>(Builders<Goal>.Projection.Exclude(g => g.Activity))
                                        .ToListAsync();
 
             if (userGoals.Count > 0)
@@ -95,7 +95,7 @@ namespace Users.DbAccess
             {
                 gl.Profile_Id = Profile_id;
                 gl.Goal_Title = Goal_Title;
-
+                gl.Activity = new Activity[] { };
                 try
                 {
                     await goals.InsertOneAsync(gl);
@@ -123,11 +123,12 @@ namespace Users.DbAccess
             bool IsSuccessful = false;
             activity.Activity_Id = ObjectId.GenerateNewId();
 
-            Goal targetGoal = await goals.Find(fl.ToFind<Goal>(nameof(Goal_Id), Goal_Id)).FirstOrDefaultAsync();
+            var filter = fl.ToFind<Goal>(nameof(Goal_Id), Goal_Id, true);
+            Goal targetGoal = await goals.Find(filter).FirstOrDefaultAsync();
 
             try
             {
-                await goals.UpdateOneAsync(fl.ToFind<Goal>(nameof(Goal_Id), Goal_Id), fl.ToUpdate<Goal>(activity, targetGoal.Activities));
+                await goals.UpdateOneAsync(filter, fl.ToUpdate<Goal>(activity, targetGoal.Activity));
                 IsSuccessful = true;
             }
 
@@ -147,8 +148,8 @@ namespace Users.DbAccess
         /// <returns>Returns a <see cref="List{Activity}"/> containing all activities.</returns>
         public async Task<List<Activity>> GetSelectedActivities(string Goal_Id, int limit = 1, int skip = 0)
         {
-            var proj = fl.ToFindSome<Goal>(g => g.Activities, skip, limit);
-            var activites = await goals.Find(fl.ToFind<Goal>(nameof(Goal_Id), Goal_Id))
+            var proj = fl.ToFindSome<Goal>(g => g.Activity, limit, skip);
+            var activites = await goals.Find(fl.ToFind<Goal>(nameof(Goal_Id), Goal_Id, true))
                 .Project<Activity>(proj)
                 .ToListAsync();
             return activites;
