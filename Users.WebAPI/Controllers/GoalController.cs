@@ -31,9 +31,9 @@ namespace Users.WebAPI.Controllers
 
         
         [HttpPost("CreateGoal")]
-        public async void CreateGoal(string Profile_Id, string Goal_Title)
+        public async void CreateGoal([FromBody]BuildGoal builder)
         {
-            await goalRepository.CreateGoal(Profile_Id, Goal_Title);
+            await goalRepository.CreateGoal(builder.Profile_Id, builder.Goal_Title);
         }
         #endregion
 
@@ -77,6 +77,12 @@ namespace Users.WebAPI.Controllers
         #endregion
 
         #region Required classes for FromBody
+        public class BuildGoal
+        {
+            public string Profile_Id { get; set; }
+            public string Goal_Title { get; set; }
+        }
+
         public class BuildGoalProgress
         {
             public string Goal_Id { get; set; }

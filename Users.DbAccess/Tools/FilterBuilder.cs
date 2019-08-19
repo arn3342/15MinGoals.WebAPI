@@ -2,6 +2,8 @@
 using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
+using System.Reflection;
 using Users.Models;
 
 namespace Users.DbAccess.Tools
@@ -145,20 +147,22 @@ namespace Users.DbAccess.Tools
         /// <typeparam name="T"></typeparam>
         /// <param name="Value">The value to search for. By default, the function considers the name of the variable passed as <paramref name="Value"/> to be the same as the field's name in the document.</param>
         /// <returns>A <see cref="FilterDefinition{TDocument}"/> of any given type.</returns>
-        public FilterDefinition<T> ToFind<T>(string Field_Name, object Value)
+        public FilterDefinition<T> ToFind<T>(string Field_Name, object Value, bool IsObjectId = false)
         {
-            if (Field_Name.ToLower().Contains("id"))
+            if (IsObjectId && Field_Name.ToLower().Contains("id"))
             {
                 Value = new ObjectId(Value.ToString());
             }
 
-            FilterDefinition<T> query_filter = Builders<T>.Filter.Eq(Field_Name, Value);
-            var qr = Builders<User>.Filter.Eq(Field_Name, Value);
-            if (qr.Equals(query_filter))
+            if (char.IsLower(Field_Name[0]))
             {
-                var test = new User();
+                var upper = char.ToUpper(Field_Name[0]);
+                Field_Name = upper + Field_Name.Remove(0, 1);
             }
-            return query_filter;
+            FilterDefinitionBuilder<T> query_filter = Builders<T>.Filter;
+
+            FilterDefinition<T> fl = query_filter.Eq(Field_Name, Value);
+            return fl;
         }
 
         /// <summary>
@@ -171,9 +175,9 @@ namespace Users.DbAccess.Tools
         /// <returns></returns>
         public ProjectionDefinition<T> ToFindSome<T>(System.Linq.Expressions.Expression<Func<T, object>> expression, int limit, int skip = 0)
         {
-            ProjectionDefinition<T> query_filter = Builders<T>.Projection.Slice(expression, skip, limit);
-
-            return query_filter;
+            ProjectionDefinitionBuilder<T> query_filter = Builders<T>.Projection;
+            var qr = query_filter.Slice(expression, skip, limit);
+            return qr;
         }
 
         /// <summary>
@@ -186,9 +190,9 @@ namespace Users.DbAccess.Tools
         /// <returns></returns>
         public ProjectionDefinition<T> ToFindSome<T>(string FieldName, int limit, int skip = 0)
         {
-            ProjectionDefinition<T> query_filter = Builders<T>.Projection.Slice(FieldName, skip, limit);
-
-            return query_filter;
+            ProjectionDefinitionBuilder<T> query_filter = Builders<T>.Projection;
+            var qr = query_filter.Slice(FieldName, skip, limit);
+            return qr;
         }
     }
 }

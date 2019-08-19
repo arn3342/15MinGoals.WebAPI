@@ -63,13 +63,20 @@ namespace Users.DbAccess
         /// <returns>Returns true if user has goals, <see cref="List{Goal}"/> containing all goals./returns>
         public async Task<(bool HasGoal, List<Goal> AllGoals)> GetGoals(string Profile_id)
         {
-            //var goalfilter = Builders<Goal>.Filter.Eq(x => x.Profile_Id, Profile_id);
+            var goalfilter = Builders<Goal>.Filter.Eq(x => x.Profile_Id, Profile_id);
             bool HasGoal = false;
 
-            List<Goal> userGoals = await goals.Find(fl.ToFind<Goal>(nameof(Profile_id), Profile_id))
+            //var test = await goals.Find(fl.ToFind<Goal>(nameof(Profile_id), Profile_id)).ForEachAsync();
+            ObjectId Goal_Id = new ObjectId("5d5a868d5d61482fa83a669f");
+            List<Goal> userGoals = await goals.Find(fl.ToFind<Goal>(nameof(Goal_Id), Goal_Id))
                                        .Project<Goal>(Builders<Goal>.Projection.Exclude(g => g.Activities))
                                        .ToListAsync();
 
+            Goal gl = userGoals[0];
+            if (gl.Profile_Id == Profile_id)
+            {
+                var test = gl.Profile_Id;
+            }
             if (userGoals.Count > 0)
             {
                 HasGoal = true;
