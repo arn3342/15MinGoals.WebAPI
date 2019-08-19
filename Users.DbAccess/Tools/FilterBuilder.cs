@@ -161,7 +161,7 @@ namespace Users.DbAccess.Tools
             }
             FilterDefinitionBuilder<T> query_filter = Builders<T>.Filter;
 
-            FilterDefinition<T> fl = query_filter.Eq(Field_Name, Value);
+            FilterDefinition<T> fl = query_filter.Eq("Profile_Id", Value);
             return fl;
         }
 
