@@ -28,9 +28,10 @@ namespace Users.DbAccess
         }
         #endregion
 
-        #region Global Variables
+        #region Variables
         private MongoDbContext _dbContext;
         private IMongoCollection<User> users;
+        FilterBuilder fl = new FilterBuilder();
         Hashing hs;
         #endregion
 
@@ -62,9 +63,7 @@ namespace Users.DbAccess
             #endregion
 
             #region Checking user's existance
-            var filter = Builders<User>.Filter.Eq(x => x.Email, email);
-
-            await users.Find(filter).ForEachAsync(document =>
+            await users.Find(fl.ToFind<User>(nameof(email), email)).ForEachAsync(document =>
             {
                 if (document != null)
                 {

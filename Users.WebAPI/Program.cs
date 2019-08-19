@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using System;
 
 namespace Users.WebAPI
 {
@@ -7,7 +8,14 @@ namespace Users.WebAPI
     {
         public static void Main(string[] args)
         {
-            CreateWebHostBuilder(args).Build().Run();
+            try
+            {
+                CreateWebHostBuilder(args).Build().Run();
+            }
+            catch (Exception ex)
+            {
+                var test = ex.ToString();
+            }
         }
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>

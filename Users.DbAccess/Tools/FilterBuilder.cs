@@ -2,6 +2,7 @@
 using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
+using Users.Models;
 
 namespace Users.DbAccess.Tools
 {
@@ -12,6 +13,9 @@ namespace Users.DbAccess.Tools
     {
         /// <summary>
         /// Generates a <see cref="MongoDB.Driver.UpdateDefinition{TDocument}"/> of any given type.
+        /// <para>
+        /// Used to build a query to update a specific document within a collection.
+        /// </para>
         /// </summary>
         /// <example>
         /// To update a parent object, call the function as follows:
@@ -125,14 +129,64 @@ namespace Users.DbAccess.Tools
             return update_filter.Combine(updates);
         }
 
-        public FilterDefinition<T> ToFind<T>(string KeyPropertyName, object Value)
+        /// <summary>
+        /// Generates a <see cref="FilterDefinition{TDocument}"/> of any given type. 
+        /// <para>
+        /// Used to build a query to find a specific document within a collection.
+        /// </para>
+        /// </summary>
+        /// <example>
+        /// To create a filter to fetch a document that mathces has a given value in any of it's fields, call the function as follows:
+        /// <code>
+        /// FilterBuilder fl = new FilterBuilder();
+        /// var FindingFilter = fl.ToFInd<TypeOfObject>("User_Id", 1234);
+        /// </code>
+        /// </example>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="Value">The value to search for. By default, the function considers the name of the variable passed as <paramref name="Value"/> to be the same as the field's name in the document.</param>
+        /// <returns>A <see cref="FilterDefinition{TDocument}"/> of any given type.</returns>
+        public FilterDefinition<T> ToFind<T>(string Field_Name, object Value)
         {
-            if (KeyPropertyName.ToLower().Contains("id"))
+            if (Field_Name.ToLower().Contains("id"))
             {
                 Value = new ObjectId(Value.ToString());
             }
 
-            FilterDefinition<T> query_filter = Builders<T>.Filter.Eq(x => x.GetType().GetProperty(KeyPropertyName).GetValue(x), Value);
+            FilterDefinition<T> query_filter = Builders<T>.Filter.Eq(Field_Name, Value);
+            var qr = Builders<User>.Filter.Eq(Field_Name, Value);
+            if (qr.Equals(query_filter))
+            {
+                var test = new User();
+            }
+            return query_filter;
+        }
+
+        /// <summary>
+        /// Generates a <see cref="ProjectionDefinition{TSource}"/> of any given type, limits the results as required.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="expression">The lambda expression to defile the array/collection.</param>
+        /// <param name="limit">The number of documents to fetch.</param>
+        /// <param name="skip">The number of documents to skip.</param>
+        /// <returns></returns>
+        public ProjectionDefinition<T> ToFindSome<T>(System.Linq.Expressions.Expression<Func<T, object>> expression, int limit, int skip = 0)
+        {
+            ProjectionDefinition<T> query_filter = Builders<T>.Projection.Slice(expression, skip, limit);
+
+            return query_filter;
+        }
+
+        /// <summary>
+        /// An overload of <see cref="ToFindSome{T}(System.Linq.Expressions.Expression{Func{T, object}}, int, int)"/>, accepts string as field name to simplify the search.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="FieldName">The name of the field of the array/collection, or the name of the collection.</param>
+        /// <param name="limit"></param>
+        /// <param name="skip"></param>
+        /// <returns></returns>
+        public ProjectionDefinition<T> ToFindSome<T>(string FieldName, int limit, int skip = 0)
+        {
+            ProjectionDefinition<T> query_filter = Builders<T>.Projection.Slice(FieldName, skip, limit);
 
             return query_filter;
         }

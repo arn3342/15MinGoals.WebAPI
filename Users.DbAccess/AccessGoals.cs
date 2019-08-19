@@ -1,8 +1,8 @@
-﻿using System;
+﻿using MongoDB.Bson;
+using MongoDB.Driver;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using MongoDB.Bson;
-using MongoDB.Driver;
 using Users.DbAccess.Tools;
 using Users.Models;
 
@@ -63,10 +63,10 @@ namespace Users.DbAccess
         /// <returns>Returns true if user has goals, <see cref="List{Goal}"/> containing all goals./returns>
         public async Task<(bool HasGoal, List<Goal> AllGoals)> GetGoals(string Profile_id)
         {
-            var goalfilter = Builders<Goal>.Filter.Eq(x => x.Profile_Id, Profile_id);
+            //var goalfilter = Builders<Goal>.Filter.Eq(x => x.Profile_Id, Profile_id);
             bool HasGoal = false;
 
-            List<Goal> userGoals = await goals.Find(goalfilter)
+            List<Goal> userGoals = await goals.Find(fl.ToFind<Goal>(nameof(Profile_id), Profile_id))
                                        .Project<Goal>(Builders<Goal>.Projection.Exclude(g => g.Activities))
                                        .ToListAsync();
 
@@ -89,7 +89,7 @@ namespace Users.DbAccess
             Goal gl = new Goal();
             bool IsSuccessful = false; bool IsExist = false;
 
-            IsExist = await goals.Find(g => g.Goal_Title == Goal_Title).AnyAsync();
+            IsExist = await goals.Find(fl.ToFind<Goal>(nameof(Goal_Title), Goal_Title)).AnyAsync();
 
             if (!IsExist)
             {
@@ -123,14 +123,14 @@ namespace Users.DbAccess
             bool IsSuccessful = false;
             activity.Activity_Id = ObjectId.GenerateNewId();
 
-            var goalfilter = Builders<Goal>.Filter.Eq(x => x.Goal_Id, new ObjectId(Goal_Id));
-            Goal targetGoal = await goals.Find(goalfilter).FirstOrDefaultAsync();
+            Goal targetGoal = await goals.Find(fl.ToFind<Goal>(nameof(Goal_Id), Goal_Id)).FirstOrDefaultAsync();
 
             try
             {
-                await goals.UpdateOneAsync(fl.ToFind<Goal>("Goal_Id", Goal_Id), fl.ToUpdate<Goal>(targetGoal, Child: activity, ArrayProperty: targetGoal.Activities));
+                await goals.UpdateOneAsync(fl.ToFind<Goal>(nameof(Goal_Id), Goal_Id), fl.ToUpdate<Goal>(activity, targetGoal.Activities));
                 IsSuccessful = true;
             }
+
             catch (Exception ex)
             {
                 IsSuccessful = false;
@@ -147,11 +147,10 @@ namespace Users.DbAccess
         /// <returns>Returns a <see cref="List{Activity}"/> containing all activities.</returns>
         public async Task<List<Activity>> GetSelectedActivities(string Goal_Id, int limit = 1, int skip = 0)
         {
-            var proj = Builders<Goal>.Projection.Slice(g => g.Activities, skip, limit);
-            var activites = await goals.Find(g => g.Goal_Id == new ObjectId(Goal_Id))
+            var proj = fl.ToFindSome<Goal>(g => g.Activities, skip, limit);
+            var activites = await goals.Find(fl.ToFind<Goal>(nameof(Goal_Id), Goal_Id))
                 .Project<Activity>(proj)
                 .ToListAsync();
-
             return activites;
         }
 
@@ -165,7 +164,7 @@ namespace Users.DbAccess
         {
 
             Progress progress = new Progress();
-            progress = await progresses.Find(p => p.Goal_Id == Goal_Id).FirstOrDefaultAsync();
+            progress = await progresses.Find(fl.ToFind<Progress>(nameof(Goal_Id), Goal_Id)).FirstOrDefaultAsync();
 
             if (progress == null)
             {
@@ -178,27 +177,30 @@ namespace Users.DbAccess
 
                 await progresses.InsertOneAsync(progress);
 
-                return (true,false);
+                return (true, false);
             }
             else
             {
+                Progress SelectedProgress = progress;
+
                 progress.CurrentCourse_Id = CurrentCourse_Id;
                 progress.Xp_Points = SetGoalPoints(progress.Xp_Points);
                 progress.Goal_Level = SetGoalLevel(progress.Xp_Points);
 
-                var updateProgress = Builders<Progress>.Update.Set(up=>up.CurrentCourse_Id , progress.CurrentCourse_Id)
-                                                       .Set(up => up.Xp_Points, progress.Xp_Points)
-                                                       .Set(up => up.Goal_Level, progress.Goal_Level);
+                //var updateProgress = Builders<Progress>.Update.Set(up => up.CurrentCourse_Id, progress.CurrentCourse_Id)
+                //                                       .Set(up => up.Xp_Points, progress.Xp_Points)
+                //                                       .Set(up => up.Goal_Level, progress.Goal_Level);
 
-                await progresses.UpdateOneAsync<Progress>(p => p.Progress_Id == progress.Progress_Id, updateProgress);
-                return (false,true);
+
+                await progresses.UpdateOneAsync(fl.ToFind<Progress>(nameof(progress.Progress_Id), progress.Progress_Id), fl.ToUpdate<Progress>(progress, SelectedProgress));
+                return (false, true);
             }
         }
 
 
         public async Task<Progress> GetProgressOfGoal(string Goal_Id)
         {
-            return await progresses.Find(p => p.Goal_Id == Goal_Id).FirstOrDefaultAsync();
+            return await progresses.Find(fl.ToFind<Progress>(nameof(Goal_Id), Goal_Id)).FirstOrDefaultAsync();
         }
 
         /// <summary>

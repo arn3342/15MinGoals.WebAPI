@@ -58,7 +58,7 @@ namespace Users.DbAccess
             {
                 if (newUser == null)
                 {
-                    await userCollection.UpdateOneAsync(usr => usr.Id == SelectedUser.Id, fl.ToUpdate<User>(user, SelectedProfile, user.Profile));
+                    await userCollection.UpdateOneAsync(fl.ToFind<User>(nameof(SelectedUser.Id), SelectedUser.Id), fl.ToUpdate<User>(user.Profile, SelectedProfile, true));
                 }
                 else
                 {
@@ -66,7 +66,7 @@ namespace Users.DbAccess
                     {
                         newUser.Password = hs.HashPassword(newUser.Password);
                     }
-                    await userCollection.UpdateOneAsync(usr => usr.Id == SelectedUser.Id, fl.ToUpdate<User>(newUser, SelectedUser));
+                    await userCollection.UpdateOneAsync(fl.ToFind<User>(nameof(SelectedUser.Id), SelectedUser.Id), fl.ToUpdate<User>(newUser, SelectedUser));
                 }
                 IsUpdateSuccessfull = true;
             }

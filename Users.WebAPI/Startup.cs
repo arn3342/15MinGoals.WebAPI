@@ -54,15 +54,15 @@ namespace Users.WebAPI
 
             //});
 
-            //app.UseMvc(routes =>
-            //{
-            //    routes.MapRoute("default", "{controller=Users}/{action=Index}/{id?}");
+            app.UseMvc(routes =>
+            {
+                routes.MapRoute("default", "{controller=Users}/{action=Index}/{id?}");
 
-            //});
-            //app.UseMvc(routes =>
-            //{
-            //    routes.MapRoute("default", "{controller=Goal}/{action=Index}/{id?}");
-            //});
+            });
+            app.UseMvc(routes =>
+            {
+                routes.MapRoute("default", "{controller=Goal}/{action=Index}/{id?}");
+            });
 
             ConnectionString = ConfigurationRoot["ConnectionString:DefaultConnection"];
 
