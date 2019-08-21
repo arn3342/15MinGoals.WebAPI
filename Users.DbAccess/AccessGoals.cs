@@ -146,13 +146,13 @@ namespace Users.DbAccess
         /// <param name="limit">The number of activities to return</param>
         /// <param name="skip">The total number of previously returned activities</param>
         /// <returns>Returns a <see cref="List{Activity}"/> containing all activities.</returns>
-        public async Task<List<Activity>> GetSelectedActivities(string Goal_Id, int limit = 1, int skip = 0)
+        public async Task<Goal> GetSelectedActivities(string Goal_Id, int limit = 1, int skip = 0)
         {
             var proj = fl.ToFindSome<Goal>(g => g.Activity, limit, skip);
-            var activites = await goals.Find(fl.ToFind<Goal>(nameof(Goal_Id), Goal_Id, true))
-                .Project<Activity>(proj)
-                .ToListAsync();
-            return activites;
+            var goalActivites = await goals.Find(fl.ToFind<Goal>(nameof(Goal_Id), Goal_Id, true))
+                                       .Project<Goal>(proj)
+                                       .FirstOrDefaultAsync();
+            return goalActivites;
         }
 
         /// <summary>

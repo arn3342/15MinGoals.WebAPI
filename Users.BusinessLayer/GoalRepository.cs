@@ -40,7 +40,7 @@ namespace Users.BusinessLayer
             return await ag.CreateActivity(Goal_Id,act);
         }
 
-        public async Task<List<Activity>> GetSelectedActivities(string Goal_Id, int limit, int skip)
+        public async Task<Goal> GetSelectedActivities(string Goal_Id, int limit, int skip)
         {
             return await ag.GetSelectedActivities(Goal_Id, limit, skip);
         }

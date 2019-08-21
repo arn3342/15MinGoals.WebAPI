@@ -40,10 +40,10 @@ namespace Users.WebAPI.Controllers
         #region Activity   
 
         [HttpGet("GetSelectedActivities")]
-        public async Task<(ActionResult<bool>, IEnumerable<Activity>)> GetSelectedActivities(string Goal_id, int limit, int skip)
+        public async Task<(ActionResult<bool>, Goal)> GetSelectedActivities(string Goal_id, int limit, int skip)
         {
-            List<Activity> result = await goalRepository.GetSelectedActivities(Goal_id, limit, skip);
-            if (result.Count > 0)
+            Goal result = await goalRepository.GetSelectedActivities("5d5aca9f6411583eccad3e0b", 1, 1);
+            if (result != null)
             {
                 return (StatusCode(201), result);
             }
