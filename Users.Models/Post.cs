@@ -1,4 +1,6 @@
-﻿using System;
+﻿using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -6,16 +8,19 @@ namespace Users.Models
 {
     public class Post
     {
-        public int Post_Id { get; set; }
-        public int Goal_Id { get; set; }
+        [BsonId]
+        public ObjectId Post_Id { get; set; }
+        public ObjectId Goal_Id { get; set; }
         public string Post_Type { get; set; }
         public DateTime Post_Time { get; set; }
         public string Post_Header { get; set; }
         public string Post_Body { get; set; }
         public string Post_Credential { get; set; }
         public string Privacy_Level { get; set; }
-        public int[] Feedback_Ids { get; set; }
-        public int[] Inspire_Ids { get; set; }
+        [BsonId]
+        public ObjectId Feedback_Ids { get; set; }
+        [BsonId]
+        public ObjectId Inspire_Ids { get; set; }
 
         public void CreateNewPost()
         {

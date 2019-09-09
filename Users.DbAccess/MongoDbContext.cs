@@ -23,7 +23,8 @@ namespace Users.DbAccess
             user,
             goals,
             profile,
-            progress
+            progress,
+            posts
         }
         
     }
