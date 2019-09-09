@@ -59,6 +59,12 @@ namespace Users.WebAPI
                 routes.MapRoute("default", "{controller=Users}/{action=Index}/{id?}");
 
             });
+
+            app.UseMvc(routes =>
+            {
+                routes.MapRoute("default", "{controller=Post}/{action=Index}/{id?}");
+
+            });
             app.UseMvc(routes =>
             {
                 routes.MapRoute("default", "{controller=Goal}/{action=Index}/{id?}");

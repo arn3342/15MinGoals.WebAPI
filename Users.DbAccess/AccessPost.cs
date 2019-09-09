@@ -45,8 +45,8 @@ namespace Users.DbAccess
                 p.Post_Body = postObj.Post_Body;
                 p.Post_Credential = postObj.Post_Credential;
                 p.Post_Header = postObj.Post_Header;
-                p.Inspire_Ids = ObjectId.GenerateNewId();
-                p.Feedback_Ids = ObjectId.GenerateNewId();
+                p.Inspire_Ids = ObjectId.GenerateNewId().ToString();
+                p.Feedback_Ids = ObjectId.GenerateNewId().ToString();
 
                 try
                 {

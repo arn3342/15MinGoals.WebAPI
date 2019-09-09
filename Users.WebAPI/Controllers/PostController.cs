@@ -19,15 +19,22 @@ namespace Users.WebAPI.Controllers
         {
             pr = new PostRepository(Startup.ConnectionString);
         }
-        [HttpGet("CreatePost")]
-        public async Task<ActionResult<bool>> CreatePost(Post post,string emailId,ObjectId goalId)
+        [HttpPost("CreatePost")]
+        public async Task<ActionResult<bool>> CreatePost([FromBody] BuildPost bp)
         {
-            if(emailId !=null && goalId!=null)
+            if(bp.emailId !=null)
             {
-                await pr.CreatedPost(post, emailId, goalId);
+                await pr.CreatedPost(bp.post, bp.emailId,bp.goalId);
                 return StatusCode(201, "Successfully Created");
             }
             return BadRequest();
+        }
+
+        public class BuildPost
+        {
+            public Post post { get; set; }
+            public string emailId { get; set; }
+            public ObjectId goalId { get; set; }
         }
     }
 }

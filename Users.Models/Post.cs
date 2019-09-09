@@ -17,10 +17,10 @@ namespace Users.Models
         public string Post_Body { get; set; }
         public string Post_Credential { get; set; }
         public string Privacy_Level { get; set; }
-        [BsonId]
-        public ObjectId Feedback_Ids { get; set; }
-        [BsonId]
-        public ObjectId Inspire_Ids { get; set; }
+        
+        public string Feedback_Ids { get; set; }
+        
+        public string Inspire_Ids { get; set; }
 
         public void CreateNewPost()
         {
